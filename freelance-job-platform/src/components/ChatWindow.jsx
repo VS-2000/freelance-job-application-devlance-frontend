@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import API from "../api/axios";
 import { FaPaperPlane, FaUserCircle } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
 
 const ChatWindow = ({ jobId, otherUserId, otherUserName }) => {
     const [messages, setMessages] = useState([]);
@@ -59,6 +60,8 @@ const ChatWindow = ({ jobId, otherUserId, otherUserName }) => {
         }
     };
 
+    const { user } = useAuth();
+
     return (
         <div className="flex flex-col h-[500px] bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-2xl">
             {/* Chat Header */}
@@ -82,7 +85,8 @@ const ChatWindow = ({ jobId, otherUserId, otherUserName }) => {
                     <div className="text-center text-gray-400 p-10 italic">No messages yet. Start a conversation!</div>
                 ) : (
                     messages.map((msg) => {
-                        const isMe = msg.sender === otherUserId ? false : true; // This is a simplified check, ideally compare with user._id from context
+                        const senderId = typeof msg.sender === 'object' ? msg.sender._id : msg.sender;
+                        const isMe = senderId.toString() === user?._id?.toString();
                         return (
                             <div key={msg._id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                                 <div className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm shadow-sm ${isMe

@@ -118,7 +118,7 @@ const JobDetails = () => {
   return (
     <div className="min-h-screen bg-black pb-20">
       <div className="w-full px-4 md:px-10 py-12">
-        <div className="flex flex-col md:flex-row justify-between items-start mb-10 gap-6">
+        <div className="flex flex-col md:flex-row justify-between items-start mb-6 gap-6">
           <div className="max-w-4xl">
             <motion.h2
               initial={{ opacity: 0, y: -20 }}
@@ -135,6 +135,19 @@ const JobDetails = () => {
               <span>Experience: <span className="text-white font-bold">{job.experienceLevel}</span></span>
               <span className="hidden sm:inline text-gray-700">•</span>
               <span>Posted {new Date(job.createdAt).toLocaleDateString()}</span>
+              {job.paymentStatus && (
+                <>
+                  <span className="hidden sm:inline text-gray-700">•</span>
+                  <span className={`px-4 py-1.5 rounded-full font-bold uppercase tracking-wider text-xs border ${job.paymentStatus === 'escrow' ? 'bg-green-900/30 text-green-400 border-green-700/50' :
+                    job.paymentStatus === 'released' ? 'bg-blue-900/30 text-blue-400 border-blue-700/50' :
+                      'bg-yellow-900/30 text-yellow-500 border-yellow-700/50'
+                    }`}>
+                    Payment: {job.paymentStatus === 'escrow' ? 'Verified (In Escrow)' :
+                      job.paymentStatus === 'released' ? 'Released to Freelancer' :
+                        'Awaiting Funding'}
+                  </span>
+                </>
+              )}
             </div>
           </div>
           <div className="md:text-right bg-gray-900 p-6 rounded-[32px] border border-gray-800 shadow-2xl shadow-purple-900/10 min-w-[240px]">
@@ -258,34 +271,47 @@ const JobDetails = () => {
                   >
                     Deliver Completed Work
                   </motion.h3>
-                  <div className="space-y-6">
-                    <div>
-                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Project URL (Drive, Github, etc.)</label>
-                      <input
-                        type="url"
-                        className="w-full bg-black border border-gray-800 rounded-2xl p-4 text-sm focus:border-purple-500 focus:outline-none transition-all placeholder:text-gray-700 text-white"
-                        placeholder="https://your-work-link.com"
-                        value={submissionUrl}
-                        onChange={(e) => setSubmissionUrl(e.target.value)}
-                      />
+
+                  {job.paymentStatus !== "escrow" ? (
+                    <div className="bg-yellow-900/10 border border-yellow-900/20 rounded-2xl p-6 mb-4">
+                      <div className="flex items-center gap-3 text-yellow-500 mb-2">
+                        <FaExclamationCircle />
+                        <span className="font-black uppercase text-[10px] tracking-widest">Payment Not Verified</span>
+                      </div>
+                      <p className="text-gray-400 text-sm font-medium leading-relaxed">
+                        Wait for the client to fund this project before submitting work. This ensures your payment is secured in escrow.
+                      </p>
                     </div>
-                    <div>
-                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Delivery Note</label>
-                      <textarea
-                        className="w-full bg-black border border-gray-800 rounded-2xl p-4 text-sm focus:border-purple-500 focus:outline-none transition-all placeholder:text-gray-700 text-white"
-                        placeholder="Briefly describe what you've delivered..."
-                        rows={4}
-                        value={submissionDesc}
-                        onChange={(e) => setSubmissionDesc(e.target.value)}
-                      />
+                  ) : (
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Project URL (Drive, Github, etc.)</label>
+                        <input
+                          type="url"
+                          className="w-full bg-black border border-gray-800 rounded-2xl p-4 text-sm focus:border-purple-500 focus:outline-none transition-all placeholder:text-gray-700 text-white"
+                          placeholder="https://your-work-link.com"
+                          value={submissionUrl}
+                          onChange={(e) => setSubmissionUrl(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Delivery Note</label>
+                        <textarea
+                          className="w-full bg-black border border-gray-800 rounded-2xl p-4 text-sm focus:border-purple-500 focus:outline-none transition-all placeholder:text-gray-700 text-white"
+                          placeholder="Briefly describe what you've delivered..."
+                          rows={4}
+                          value={submissionDesc}
+                          onChange={(e) => setSubmissionDesc(e.target.value)}
+                        />
+                      </div>
+                      <button
+                        onClick={handleSubmitWork}
+                        className="w-full bg-white text-black py-4 rounded-2xl font-black hover:bg-gray-200 transition-colors shadow-lg"
+                      >
+                        Submit Work for Review
+                      </button>
                     </div>
-                    <button
-                      onClick={handleSubmitWork}
-                      className="w-full bg-white text-black py-4 rounded-2xl font-black hover:bg-gray-200 transition-colors shadow-lg"
-                    >
-                      Submit Work for Review
-                    </button>
-                  </div>
+                  )}
                 </div>
                 <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/20 blur-[100px] rounded-full -mr-32 -mt-32"></div>
               </section>
