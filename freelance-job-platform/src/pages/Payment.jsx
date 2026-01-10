@@ -33,7 +33,7 @@ const Payment = () => {
       // Simulate API call delay for realism
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      await API.post("/payment/simulate", {
+      await API.post("/payments/simulate", {
         jobId: jobId,
         amount: job.budget
       });
