@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import API from "../api/axios";
 import toast from "react-hot-toast";
@@ -402,13 +403,13 @@ const AdminPanel = () => {
                                   )}
 
                                   {j.status === 'in-progress' && (!j.payment || j.payment.status !== 'escrow') && (
-                                    <a
-                                      href={`/payment/${j._id}`}
+                                    <Link
+                                      to={`/payment/${j._id}`}
                                       className="bg-purple-600/20 text-purple-400 border border-purple-900/50 p-2.5 rounded-xl hover:bg-purple-600 hover:text-white transition-all flex items-center justify-center group"
                                       title="Proceed to Escrow Payment"
                                     >
                                       <FaWallet className="text-lg" />
-                                    </a>
+                                    </Link>
                                   )}
 
                                   {j.status === 'in-progress' && j.payment?.status === 'escrow' && j.submission && (
