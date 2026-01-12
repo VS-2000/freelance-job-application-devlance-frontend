@@ -102,7 +102,7 @@ const Contact = () => {
                                 </div>
                                 <div>
                                     <div className="text-sm text-gray-500 font-bold uppercase tracking-widest">Our Office</div>
-                                    <div className="text-xl font-bold">123 Tech Avenue, Silicon Valley, CA</div>
+                                    <div className="text-xl font-bold">India, Kerala </div>
                                 </div>
                             </div>
                         </div>
@@ -111,7 +111,7 @@ const Contact = () => {
                         <div className="mt-12 p-8 bg-gray-900/40 rounded-3xl border border-gray-800">
                             <h3 className="font-bold text-xl mb-4 text-purple-600">Response Time</h3>
                             <p className="text-gray-400">
-                                Our support team is available Monday through Friday, 9:00 AM to 6:00 PM PST. We typically respond to all inquiries within 24 hours.
+                                Our support team is available Monday to Friday, 9:00 AM to 6:00 PM . We typically respond to all inquiries within 24 hours.
                             </p>
                         </div>
                     </motion.div>
@@ -133,7 +133,7 @@ const Contact = () => {
                                     onChange={handleChange}
                                     required
                                     className="w-full bg-black border border-gray-800 rounded-2xl px-6 py-4 focus:outline-none focus:border-purple-600 transition-colors text-white"
-                                    placeholder="John Doe"
+                                    placeholder="Name"
                                 />
                             </div>
 
@@ -146,7 +146,7 @@ const Contact = () => {
                                     onChange={handleChange}
                                     required
                                     className="w-full bg-black border border-gray-800 rounded-2xl px-6 py-4 focus:outline-none focus:border-purple-600 transition-colors text-white"
-                                    placeholder="john@example.com"
+                                    placeholder="email@example.com"
                                 />
                             </div>
 
