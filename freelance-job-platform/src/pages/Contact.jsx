@@ -146,7 +146,7 @@ const Contact = () => {
                                     onChange={handleChange}
                                     required
                                     className="w-full bg-black border border-gray-800 rounded-2xl px-6 py-4 focus:outline-none focus:border-purple-600 transition-colors text-white"
-                                    placeholder="email@example.com"
+                                    placeholder="emails@example.com"
                                 />
                             </div>
 
