@@ -118,27 +118,31 @@ const JobDetails = () => {
   return (
     <div className="min-h-screen bg-black pb-20">
       <div className="w-full px-4 md:px-10 py-12">
-        <div className="flex flex-col md:flex-row justify-between items-start mb-6 gap-6">
-          <div className="max-w-4xl">
+        <div className="flex flex-col lg:flex-row justify-between items-start mb-8 gap-8">
+          <div className="max-w-4xl flex-1 w-full">
             <motion.h2
               initial={{ opacity: 0, y: -20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight leading-tight"
+              className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-6 tracking-tight leading-tight"
             >
               {job.title}
             </motion.h2>
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 font-medium">
-              <span className="bg-purple-900/50 text-purple-300 border border-purple-700/50 px-4 py-1.5 rounded-full font-bold uppercase tracking-wider text-xs">{job.category}</span>
-              <span className="hidden sm:inline text-gray-700">•</span>
-              <span>Experience: <span className="text-white font-bold">{job.experienceLevel}</span></span>
-              <span className="hidden sm:inline text-gray-700">•</span>
-              <span>Posted {new Date(job.createdAt).toLocaleDateString()}</span>
+            <div className="flex flex-wrap items-center gap-y-4 gap-x-6 text-sm text-gray-400 font-medium">
+              <span className="bg-purple-900/50 text-purple-300 border border-purple-700/50 px-4 py-1.5 rounded-full font-bold uppercase tracking-wider text-[10px]">{job.category}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-gray-600">•</span>
+                <span>Experience: <span className="text-white font-bold">{job.experienceLevel}</span></span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-gray-600">•</span>
+                <span>Posted {new Date(job.createdAt).toLocaleDateString()}</span>
+              </div>
               {job.paymentStatus && (
-                <>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
                   <span className="hidden sm:inline text-gray-700">•</span>
-                  <span className={`px-4 py-1.5 rounded-full font-bold uppercase tracking-wider text-xs border ${job.paymentStatus === 'escrow' ? 'bg-green-900/30 text-green-400 border-green-700/50' :
+                  <span className={`px-4 py-1.5 rounded-full font-black uppercase tracking-widest text-[10px] border ${job.paymentStatus === 'escrow' ? 'bg-green-900/30 text-green-400 border-green-700/50' :
                     job.paymentStatus === 'released' ? 'bg-blue-900/30 text-blue-400 border-blue-700/50' :
                       'bg-yellow-900/30 text-yellow-500 border-yellow-700/50'
                     }`}>
@@ -146,13 +150,13 @@ const JobDetails = () => {
                       job.paymentStatus === 'released' ? 'Released to Freelancer' :
                         'Awaiting Funding'}
                   </span>
-                </>
+                </div>
               )}
             </div>
           </div>
-          <div className="md:text-right bg-gray-900 p-6 rounded-[32px] border border-gray-800 shadow-2xl shadow-purple-900/10 min-w-[240px]">
-            <div className="text-4xl font-black text-white">₹{job.budget?.toLocaleString()}</div>
-            <div className="text-[10px] text-gray-500 font-black uppercase tracking-widest mt-1">Project Budget (Escrow)</div>
+          <div className="w-full lg:w-auto bg-gray-900 p-8 rounded-[32px] border border-gray-800 shadow-2xl shadow-purple-900/10 lg:min-w-[280px] text-center lg:text-right">
+            <div className="text-4xl sm:text-5xl font-black text-white">₹{job.budget?.toLocaleString()}</div>
+            <div className="text-[10px] text-gray-500 font-black uppercase tracking-widest mt-2">Project Budget (Secure Escrow)</div>
           </div>
         </div>
 

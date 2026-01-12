@@ -324,21 +324,21 @@ const AdminPanel = () => {
   return (
     <div className="min-h-screen bg-black pb-20">
       <div className="bg-gray-900 border-b border-gray-800 mb-8">
-        <div className="max-w-7xl mx-auto px-6 py-10 flex justify-between items-center relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
           <div className="relative z-10">
             <motion.h1
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-3xl font-black text-white flex items-center gap-3"
+              className="text-2xl md:text-3xl font-black text-white flex items-center gap-3"
             >
               <FaShieldAlt className="text-purple-600" /> Admin Command Center
             </motion.h1>
-            <p className="text-gray-400 font-medium mt-1">Platform-wide overview and management tools.</p>
+            <p className="text-gray-400 font-medium mt-1 text-sm md:text-base">Platform-wide overview and management tools.</p>
           </div>
-          <div className="flex gap-4 relative z-10">
+          <div className="flex gap-4 relative z-10 w-full md:w-auto">
             <button
               onClick={() => setShowPostJobModal(true)}
-              className="bg-purple-600 text-white px-6 py-3 rounded-2xl font-black text-sm hover:bg-white hover:text-black transition-all flex items-center gap-2 shadow-lg shadow-purple-900/30 hover:scale-105 active:scale-95"
+              className="w-full md:w-auto bg-purple-600 text-white px-6 py-3 rounded-2xl font-black text-sm hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-purple-900/30 hover:scale-105 active:scale-95"
             >
               <FaPlus /> Post Direct Job
             </button>
@@ -373,12 +373,12 @@ const AdminPanel = () => {
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
           <AnimatePresence mode="wait">
             {activeTab === "stats" && (
-              <motion.div key="stats" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <motion.div key="stats" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                 <StatCard title="Total Platform Users" value={stats.totalUsers} icon={<FaUsers />} color="blue" />
                 <StatCard title="Active Job Listings" value={stats.totalJobs} icon={<FaChartLine />} color="purple" />
-                <StatCard title="Total Escrow Value" value={`\u20B9${stats.totalEscrow?.toLocaleString()}`} icon={<FaWallet />} color="green" />
-                <StatCard title="Available Balance" value={`\u20B9${(stats.currentBalance || 0).toLocaleString()}`} icon={<FaShieldAlt />} color="yellow" />
-                <StatCard title="Total Withdrawn" value={`\u20B9${(stats.totalWithdrawn || 0).toLocaleString()}`} icon={<FaCheckCircle />} color="orange" />
+                <StatCard title="Total Escrow Value" value={`₹${stats.totalEscrow?.toLocaleString()}`} icon={<FaWallet />} color="green" />
+                <StatCard title="Available Balance" value={`₹${(stats.currentBalance || 0).toLocaleString()}`} icon={<FaShieldAlt />} color="yellow" />
+                <StatCard title="Total Withdrawn" value={`₹${(stats.totalWithdrawn || 0).toLocaleString()}`} icon={<FaCheckCircle />} color="orange" />
               </motion.div>
             )}
 
@@ -814,19 +814,19 @@ const AdminPanel = () => {
             )}
             {activeTab === "withdrawals" && (
               <motion.div key="withdrawals" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
-                <div className="bg-gray-900 rounded-[32px] p-8 border border-gray-800 flex justify-between items-center">
+                <div className="bg-gray-900 rounded-[32px] p-6 md:p-8 border border-gray-800 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                   <div>
                     <h3 className="text-xl font-black text-white">Commission Balance</h3>
                     <p className="text-gray-400 text-sm mt-1">Manage your earned commissions and withdrawals.</p>
                   </div>
-                  <div className="flex items-center gap-6">
-                    <div className="text-right">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 w-full lg:w-auto">
+                    <div className="text-left lg:text-right">
                       <div className="text-3xl font-black text-white">₹{(commissionData.currentBalance || 0).toLocaleString()}</div>
                       <div className="text-[10px] text-purple-400 font-black uppercase tracking-widest">Available to Withdraw</div>
                     </div>
                     <button
                       onClick={() => setShowWithdrawModal(true)}
-                      className="bg-purple-600 text-white px-8 py-4 rounded-2xl font-black hover:bg-white hover:text-black transition-all shadow-xl shadow-purple-900/20"
+                      className="w-full sm:w-auto bg-purple-600 text-white px-8 py-4 rounded-2xl font-black hover:bg-white hover:text-black transition-all shadow-xl shadow-purple-900/20"
                     >
                       Withdraw Now
                     </button>
@@ -855,8 +855,8 @@ const AdminPanel = () => {
                             <td className="px-8 py-6 text-gray-500 text-xs italic">{w.bankDetails || "N/A"}</td>
                             <td className="px-8 py-6">
                               <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider ${w.status === 'completed' ? 'bg-green-900/30 text-green-400 border border-green-900' :
-                                  w.status === 'pending' ? 'bg-yellow-900/30 text-yellow-400 border border-yellow-900' :
-                                    'bg-red-900/30 text-red-400 border border-red-900'
+                                w.status === 'pending' ? 'bg-yellow-900/30 text-yellow-400 border border-yellow-900' :
+                                  'bg-red-900/30 text-red-400 border border-red-900'
                                 }`}>
                                 {w.status}
                               </span>

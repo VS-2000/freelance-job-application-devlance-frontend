@@ -28,10 +28,10 @@ const Messages = () => {
 
     return (
         <div className="min-h-screen bg-black">
-            <div className="w-full px-4 md:px-10 py-10 flex flex-col md:flex-row gap-8 h-[calc(100vh-100px)]">
+            <div className="w-full px-4 md:px-10 py-6 md:py-10 flex flex-col md:flex-row gap-8 h-[calc(100vh-80px)] md:h-[calc(100vh-100px)]">
 
                 {/* Conversations List */}
-                <aside className="md:w-96 bg-gray-900 border border-gray-800 rounded-3xl shadow-xl overflow-hidden flex flex-col h-full">
+                <aside className={`w-full md:w-96 bg-gray-900 border border-gray-800 rounded-3xl shadow-xl overflow-hidden flex flex-col h-full ${selectedChat ? 'hidden md:flex' : 'flex'}`}>
                     <div className="p-6 border-b border-gray-800">
                         <motion.h2
                             initial={{ opacity: 0, y: -20 }}
@@ -83,15 +83,25 @@ const Messages = () => {
                     </div>
                 </aside>
 
-                {/* Chat Window */}
-                <main className="flex-1 h-full">
+                <main className={`flex-1 h-full ${selectedChat ? 'flex' : 'hidden md:flex'}`}>
                     {selectedChat ? (
-                        <div className="h-full bg-gray-900 rounded-3xl border border-gray-800 overflow-hidden shadow-xl">
-                            <ChatWindow
-                                jobId={selectedChat.job?._id || null}
-                                otherUserId={selectedChat.otherUser._id}
-                                otherUserName={selectedChat.otherUser.role === 'admin' ? 'Admin Support' : selectedChat.otherUser.name}
-                            />
+                        <div className="h-full w-full bg-gray-900 rounded-3xl border border-gray-800 overflow-hidden shadow-xl flex flex-col">
+                            {/* Mobile Back Button */}
+                            <div className="md:hidden p-4 border-b border-gray-800 flex items-center gap-2">
+                                <button
+                                    onClick={() => setSelectedChat(null)}
+                                    className="text-purple-500 font-bold flex items-center gap-1"
+                                >
+                                    ← Back to Inbox
+                                </button>
+                            </div>
+                            <div className="flex-1">
+                                <ChatWindow
+                                    jobId={selectedChat.job?._id || null}
+                                    otherUserId={selectedChat.otherUser._id}
+                                    otherUserName={selectedChat.otherUser.role === 'admin' ? 'Admin Support' : selectedChat.otherUser.name}
+                                />
+                            </div>
                         </div>
                     ) : (
                         <div className="h-full bg-gray-900 border border-gray-800 border-dashed rounded-3xl flex flex-col items-center justify-center text-gray-500 shadow-inner">

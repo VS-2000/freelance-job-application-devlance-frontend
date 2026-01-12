@@ -63,7 +63,7 @@ const ChatWindow = ({ jobId, otherUserId, otherUserName }) => {
     const { user } = useAuth();
 
     return (
-        <div className="flex flex-col h-[500px] bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-2xl">
+        <div className="flex flex-col h-full bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-2xl">
             {/* Chat Header */}
             <div className="bg-gray-900 px-6 py-4 flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold">

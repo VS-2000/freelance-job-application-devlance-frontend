@@ -5,8 +5,8 @@ import { FaMoneyBillWave, FaClock, FaTag, FaSignal, FaCheckCircle } from "react-
 const JobCard = ({ job }) => {
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 group">
-      <div className="flex justify-between items-start mb-4">
-        <div>
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
+        <div className="flex-1">
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-900/40 text-purple-300 mb-2">
             <FaTag className="mr-1" size={10} /> {job.category || "General"}
           </span>
@@ -15,13 +15,13 @@ const JobCard = ({ job }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-xl font-bold text-white group-hover:text-purple-500 transition-colors uppercase tracking-tight"
+            className="text-xl font-bold text-white group-hover:text-purple-500 transition-colors uppercase tracking-tight leading-tight"
           >
             {job.title}
           </motion.h3>
         </div>
-        <div className="bg-green-900/20 text-green-400 px-4 py-2 rounded-xl font-bold text-lg flex items-center">
-          ₹{job.budget}
+        <div className="bg-green-900/20 text-green-400 px-4 py-2 rounded-xl font-bold text-lg flex items-center whitespace-nowrap">
+          ₹{job.budget?.toLocaleString()}
         </div>
       </div>
 

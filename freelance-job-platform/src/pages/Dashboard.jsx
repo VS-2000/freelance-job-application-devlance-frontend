@@ -12,6 +12,7 @@ const Dashboard = () => {
   const [keyword, setKeyword] = useState("");
   const [category, setCategory] = useState("");
   const [showAll, setShowAll] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { user } = useAuth();
 
   const categories = ["Web Dev", "Design", "Writing", "Marketing", "Data Science", "Others"];
@@ -99,8 +100,16 @@ const Dashboard = () => {
       <div className="w-full px-4 md:px-10 pb-20">
         <div className="flex flex-col lg:flex-row gap-10">
 
+          {/* Mobile Filter Toggle */}
+          <button
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            className="lg:hidden flex items-center justify-center gap-2 w-full bg-gray-900 border border-gray-800 text-white font-bold py-3 rounded-xl mb-4"
+          >
+            <FaFilter className="text-purple-500" /> {isFilterOpen ? "Hide Filters" : "Show Filters"}
+          </button>
+
           {/* Sidebar / Filters */}
-          <aside className="lg:w-64 space-y-8">
+          <aside className={`lg:w-64 space-y-8 ${isFilterOpen ? 'block' : 'hidden lg:block'}`}>
             <div>
               <div className="flex items-center text-sm font-bold text-gray-400 uppercase tracking-wider mb-6">
                 <FaFilter className="mr-2 text-purple-500" /> Filters
