@@ -30,6 +30,11 @@ const AdminPanel = () => {
   const [currentMessages, setCurrentMessages] = useState([]);
   const [showUserPicker, setShowUserPicker] = useState(false);
   const [userSearch, setUserSearch] = useState("");
+  const [withdrawals, setWithdrawals] = useState([]);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [bankDetails, setBankDetails] = useState("");
+  const [commissionData, setCommissionData] = useState({});
 
   const [newJobData, setNewJobData] = useState({
     title: "",
@@ -53,10 +58,11 @@ const AdminPanel = () => {
         API.get("/admin/jobs"),
         API.get("/admin/my-jobs"),
         API.get("/contact/admin"),
-        API.get("/messages/admin/inbox")
+        API.get("/messages/admin/inbox"),
+        API.get("/admin/commission")
       ]);
 
-      const [statsRes, paymentsRes, usersRes, jobsRes, adminJobsRes, contactsRes, messagesRes] = results;
+      const [statsRes, paymentsRes, usersRes, jobsRes, adminJobsRes, contactsRes, messagesRes, commissionRes] = results;
 
       if (statsRes.status === 'fulfilled') setStats(statsRes.value.data);
       else console.error("Stats fetch failed", statsRes.reason);
@@ -81,6 +87,11 @@ const AdminPanel = () => {
         console.error("Messages fetch failed", messagesRes.reason);
         setDirectMessages([]); // Fallback to empty array
       }
+
+      if (commissionRes.status === 'fulfilled') {
+        setWithdrawals(commissionRes.value.data.withdrawals);
+        setCommissionData(commissionRes.value.data);
+      } else console.error("Commission fetch failed", commissionRes.reason);
 
     } catch (err) {
       console.error("Admin data fetch critical error", err);
@@ -287,6 +298,27 @@ const AdminPanel = () => {
     }
   };
 
+  const handleWithdraw = async (e) => {
+    e.preventDefault();
+    if (!withdrawAmount || Number(withdrawAmount) <= 0) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+    try {
+      await API.post("/admin/withdraw", {
+        amount: Number(withdrawAmount),
+        bankDetails
+      });
+      toast.success("Withdrawal successful!");
+      setShowWithdrawModal(false);
+      setWithdrawAmount("");
+      setBankDetails("");
+      fetchData(); // Refresh everything
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Withdrawal failed");
+    }
+  };
+
   if (loading) return <div className="min-h-screen bg-black flex items-center justify-center text-purple-600 font-black animate-pulse">ACCESSING SECURE ADMIN INTERFACE...</div>;
 
   return (
@@ -325,6 +357,7 @@ const AdminPanel = () => {
             { id: "my-jobs", label: "Admin Postings", icon: FaBriefcase },
             { id: "contacts", label: "Contact Messages", icon: FaEnvelope },
             { id: "messages", label: "Direct Messages", icon: FaComments },
+            { id: "withdrawals", label: "Withdrawals", icon: FaWallet },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -344,7 +377,8 @@ const AdminPanel = () => {
                 <StatCard title="Total Platform Users" value={stats.totalUsers} icon={<FaUsers />} color="blue" />
                 <StatCard title="Active Job Listings" value={stats.totalJobs} icon={<FaChartLine />} color="purple" />
                 <StatCard title="Total Escrow Value" value={`\u20B9${stats.totalEscrow?.toLocaleString()}`} icon={<FaWallet />} color="green" />
-                <StatCard title="Total Commission Earned" value={`\u20B9${(stats.totalRevenue || 0).toLocaleString()}`} icon={<FaShieldAlt />} color="yellow" />
+                <StatCard title="Available Balance" value={`\u20B9${(stats.currentBalance || 0).toLocaleString()}`} icon={<FaShieldAlt />} color="yellow" />
+                <StatCard title="Total Withdrawn" value={`\u20B9${(stats.totalWithdrawn || 0).toLocaleString()}`} icon={<FaCheckCircle />} color="orange" />
               </motion.div>
             )}
 
@@ -778,7 +812,69 @@ const AdminPanel = () => {
                 </div>
               </motion.div>
             )}
+            {activeTab === "withdrawals" && (
+              <motion.div key="withdrawals" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+                <div className="bg-gray-900 rounded-[32px] p-8 border border-gray-800 flex justify-between items-center">
+                  <div>
+                    <h3 className="text-xl font-black text-white">Commission Balance</h3>
+                    <p className="text-gray-400 text-sm mt-1">Manage your earned commissions and withdrawals.</p>
+                  </div>
+                  <div className="flex items-center gap-6">
+                    <div className="text-right">
+                      <div className="text-3xl font-black text-white">₹{(commissionData.currentBalance || 0).toLocaleString()}</div>
+                      <div className="text-[10px] text-purple-400 font-black uppercase tracking-widest">Available to Withdraw</div>
+                    </div>
+                    <button
+                      onClick={() => setShowWithdrawModal(true)}
+                      className="bg-purple-600 text-white px-8 py-4 rounded-2xl font-black hover:bg-white hover:text-black transition-all shadow-xl shadow-purple-900/20"
+                    >
+                      Withdraw Now
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-gray-900 rounded-[32px] shadow-2xl border border-gray-800 overflow-hidden">
+                  <div className="px-8 py-6 border-b border-gray-800 bg-black/20">
+                    <h3 className="font-black text-white uppercase text-xs tracking-widest">Withdrawal History</h3>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                      <thead className="bg-black text-gray-400 uppercase text-[10px] font-black tracking-widest border-b border-gray-800">
+                        <tr>
+                          <th className="px-8 py-6">Date</th>
+                          <th className="px-8 py-6">Amount</th>
+                          <th className="px-8 py-6">Bank Details</th>
+                          <th className="px-8 py-6">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-800 font-medium text-sm text-gray-300">
+                        {withdrawals.length > 0 ? withdrawals.map((w) => (
+                          <tr key={w._id} className="hover:bg-black/30 transition-colors">
+                            <td className="px-8 py-6">{new Date(w.createdAt).toLocaleDateString()}</td>
+                            <td className="px-8 py-6 font-black text-white">₹{w.amount.toLocaleString()}</td>
+                            <td className="px-8 py-6 text-gray-500 text-xs italic">{w.bankDetails || "N/A"}</td>
+                            <td className="px-8 py-6">
+                              <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider ${w.status === 'completed' ? 'bg-green-900/30 text-green-400 border border-green-900' :
+                                  w.status === 'pending' ? 'bg-yellow-900/30 text-yellow-400 border border-yellow-900' :
+                                    'bg-red-900/30 text-red-400 border border-red-900'
+                                }`}>
+                                {w.status}
+                              </span>
+                            </td>
+                          </tr>
+                        )) : (
+                          <tr>
+                            <td colSpan="4" className="px-8 py-12 text-center text-gray-500 italic">No withdrawals yet.</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </AnimatePresence>
+
         </div>
       </div>
 
@@ -1036,7 +1132,64 @@ const AdminPanel = () => {
             </motion.div>
           </div>
         )}
+        {/* WITHDRAWAL MODAL */}
+        {showWithdrawModal && (
+          <div className="fixed inset-0 bg-black/90 backdrop-blur-xl z-[60] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-gray-900 border border-gray-800 w-full max-w-md rounded-[40px] shadow-2xl shadow-purple-900/40"
+            >
+              <div className="p-8 border-b border-gray-800 flex justify-between items-center">
+                <h2 className="text-2xl font-black text-white flex items-center gap-3">
+                  <FaWallet className="text-purple-500" /> Withdraw Funds
+                </h2>
+                <button onClick={() => setShowWithdrawModal(false)} className="bg-black/50 text-gray-500 hover:text-white p-3 rounded-full transition-colors border border-gray-800">
+                  <FaTimes />
+                </button>
+              </div>
+
+              <form onSubmit={handleWithdraw} className="p-8 space-y-6">
+                <div>
+                  <div className="flex justify-between mb-3">
+                    <label className="text-xs font-black text-gray-500 uppercase tracking-widest">Withdrawal Amount (₹)</label>
+                    <span className="text-[10px] text-purple-400 font-bold">Max: ₹{commissionData.currentBalance?.toLocaleString()}</span>
+                  </div>
+                  <input
+                    required
+                    type="number"
+                    max={commissionData.currentBalance}
+                    className="w-full bg-black border-2 border-gray-800 focus:border-purple-600 rounded-2xl p-4 text-white font-black focus:outline-none transition-all"
+                    placeholder="Enter amount..."
+                    value={withdrawAmount}
+                    onChange={(e) => setWithdrawAmount(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Bank / Payout Details</label>
+                  <textarea
+                    required
+                    className="w-full bg-black border-2 border-gray-800 focus:border-purple-600 rounded-2xl p-4 text-white font-medium focus:outline-none transition-all min-h-[100px] resize-none"
+                    placeholder="UPI ID or Bank Account Details..."
+                    value={bankDetails}
+                    onChange={(e) => setBankDetails(e.target.value)}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-purple-600 text-white py-5 rounded-2xl font-black text-lg hover:bg-white hover:text-black transition-all shadow-xl"
+                >
+                  Confirm Withdrawal
+                </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
       </AnimatePresence>
+
     </div>
   );
 };
@@ -1045,7 +1198,9 @@ const StatCard = ({ title, value, icon, color }) => {
   const colors = {
     blue: "bg-blue-900/20 text-blue-400 border-blue-900/50",
     purple: "bg-purple-900/20 text-purple-400 border-purple-900/50",
-    green: "bg-green-900/20 text-green-400 border-green-900/50"
+    green: "bg-green-900/20 text-green-400 border-green-900/50",
+    yellow: "bg-yellow-900/20 text-yellow-400 border-yellow-900/50",
+    orange: "bg-orange-900/20 text-orange-400 border-orange-900/50"
   };
   return (
     <div className={`p-8 rounded-[32px] bg-gray-900 border border-gray-800 shadow-xl`}>
