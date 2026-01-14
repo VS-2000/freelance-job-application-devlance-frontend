@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import JobCard from "../components/JobCard";
 import { FaSearch, FaBriefcase, FaFilter } from "react-icons/fa";
+import VisionSection from "../components/VisionSection";
+
 
 const Dashboard = () => {
   const [jobs, setJobs] = useState([]);
@@ -220,6 +222,7 @@ const Dashboard = () => {
           </main>
         </div>
       </div>
+      <VisionSection />
     </div>
   );
 };
