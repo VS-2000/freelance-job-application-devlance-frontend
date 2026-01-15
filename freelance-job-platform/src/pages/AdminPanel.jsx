@@ -33,7 +33,8 @@ const AdminPanel = () => {
   const [withdrawals, setWithdrawals] = useState([]);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState("");
-  const [bankDetails, setBankDetails] = useState("");
+  const [bankDetails, setBankDetails] = useState({ accountNumber: "", ifscCode: "", bankName: "", upiId: "" });
+  const [withdrawMethod, setWithdrawMethod] = useState("bank");
   const [commissionData, setCommissionData] = useState({});
 
   const [newJobData, setNewJobData] = useState({
@@ -307,12 +308,13 @@ const AdminPanel = () => {
     try {
       await API.post("/admin/withdraw", {
         amount: Number(withdrawAmount),
-        bankDetails
+        method: withdrawMethod,
+        details: bankDetails
       });
       toast.success("Withdrawal successful!");
       setShowWithdrawModal(false);
       setWithdrawAmount("");
-      setBankDetails("");
+      setBankDetails({ accountNumber: "", ifscCode: "", bankName: "", upiId: "" });
       fetchData(); // Refresh everything
     } catch (err) {
       toast.error(err.response?.data?.message || "Withdrawal failed");
@@ -813,37 +815,71 @@ const AdminPanel = () => {
               </motion.div>
             )}
             {activeTab === "withdrawals" && (
-              <motion.div key="withdrawals" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
-                <div className="bg-gray-900 rounded-[32px] p-6 md:p-8 border border-gray-800 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+              <motion.div key="withdrawals" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-12">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                   <div>
-                    <h3 className="text-xl font-black text-white">Commission Balance</h3>
-                    <p className="text-gray-400 text-sm mt-1">Manage your earned commissions and withdrawals.</p>
+                    <h2 className="text-3xl font-black text-white flex items-center gap-4">
+                      <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">Platform Commission</span>
+                      <div className="p-2 bg-purple-500/10 rounded-2xl border border-purple-500/20 text-purple-400 text-xl">
+                        <FaWallet />
+                      </div>
+                    </h2>
+                    <p className="text-gray-500 font-medium">Manage platform earnings and payouts</p>
                   </div>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 w-full lg:w-auto">
-                    <div className="text-left lg:text-right">
-                      <div className="text-3xl font-black text-white">₹{(commissionData.currentBalance || 0).toLocaleString()}</div>
-                      <div className="text-[10px] text-purple-400 font-black uppercase tracking-widest">Available to Withdraw</div>
-                    </div>
+
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    className="bg-[#111] border border-gray-800 p-8 rounded-[2rem] shadow-2xl relative overflow-hidden group w-full md:w-auto min-w-[320px]"
+                  >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-600/10 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-purple-600/20 transition-colors"></div>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Available Commission</p>
+                    <h2 className="text-4xl font-black mb-6 text-white">₹{(commissionData.currentBalance || 0).toLocaleString()}</h2>
                     <button
                       onClick={() => setShowWithdrawModal(true)}
-                      className="w-full sm:w-auto bg-purple-600 text-white px-8 py-4 rounded-2xl font-black hover:bg-white hover:text-black transition-all shadow-xl shadow-purple-900/20"
+                      className="w-full bg-white text-black py-4 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-purple-500 hover:text-white transition-all shadow-xl"
                     >
-                      Withdraw Now
+                      <FaPlus /> Withdraw Funds
                     </button>
+                  </motion.div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-[#0c0c0c] border border-gray-800 p-6 rounded-3xl">
+                    <div className="w-12 h-12 bg-green-500/10 rounded-2xl flex items-center justify-center text-green-500 mb-4 border border-green-500/20">
+                      <FaChartLine />
+                    </div>
+                    <p className="text-gray-500 text-sm font-bold uppercase tracking-widest mb-1">Total Earned</p>
+                    <p className="text-2xl font-black text-white">₹{(commissionData.totalEarned || 0).toLocaleString()}</p>
+                  </div>
+
+                  <div className="bg-[#0c0c0c] border border-gray-800 p-6 rounded-3xl">
+                    <div className="w-12 h-12 bg-yellow-500/10 rounded-2xl flex items-center justify-center text-yellow-500 mb-4 border border-yellow-500/20">
+                      <FaSync />
+                    </div>
+                    <p className="text-gray-500 text-sm font-bold uppercase tracking-widest mb-1">Total Withdrawn</p>
+                    <p className="text-2xl font-black text-white">₹{(commissionData.totalWithdrawn || 0).toLocaleString()}</p>
+                  </div>
+
+                  <div className="bg-[#0c0c0c] border border-gray-800 p-6 rounded-3xl">
+                    <div className="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-500 mb-4 border border-purple-500/20">
+                      <FaHistory />
+                    </div>
+                    <p className="text-gray-500 text-sm font-bold uppercase tracking-widest mb-1">Recent Activity</p>
+                    <p className="text-2xl font-black text-white">{withdrawals.length} Payouts</p>
                   </div>
                 </div>
 
                 <div className="bg-gray-900 rounded-[32px] shadow-2xl border border-gray-800 overflow-hidden">
-                  <div className="px-8 py-6 border-b border-gray-800 bg-black/20">
-                    <h3 className="font-black text-white uppercase text-xs tracking-widest">Withdrawal History</h3>
+                  <div className="px-8 py-6 border-b border-gray-800 bg-black/20 flex justify-between items-center">
+                    <h3 className="font-black text-white uppercase text-xs tracking-widest">Withdrawal Status Tracker</h3>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
                       <thead className="bg-black text-gray-400 uppercase text-[10px] font-black tracking-widest border-b border-gray-800">
                         <tr>
-                          <th className="px-8 py-6">Date</th>
-                          <th className="px-8 py-6">Amount</th>
-                          <th className="px-8 py-6">Bank Details</th>
+                          <th className="px-8 py-6">Request Date</th>
+                          <th className="px-8 py-6">Payout Amount</th>
+                          <th className="px-8 py-6">Method / Details</th>
                           <th className="px-8 py-6">Status</th>
                         </tr>
                       </thead>
@@ -852,11 +888,16 @@ const AdminPanel = () => {
                           <tr key={w._id} className="hover:bg-black/30 transition-colors">
                             <td className="px-8 py-6">{new Date(w.createdAt).toLocaleDateString()}</td>
                             <td className="px-8 py-6 font-black text-white">₹{w.amount.toLocaleString()}</td>
-                            <td className="px-8 py-6 text-gray-500 text-xs italic">{w.bankDetails || "N/A"}</td>
                             <td className="px-8 py-6">
-                              <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider ${w.status === 'completed' ? 'bg-green-900/30 text-green-400 border border-green-900' :
-                                w.status === 'pending' ? 'bg-yellow-900/30 text-yellow-400 border border-yellow-900' :
-                                  'bg-red-900/30 text-red-400 border border-red-900'
+                              <div className="text-xs text-gray-400 font-bold uppercase tracking-widest">{w.method || 'Bank'}</div>
+                              <div className="text-[10px] text-gray-500 italic truncate max-w-[200px]">
+                                {w.method === 'upi' ? w.details?.upiId : `${w.details?.bankName || 'N/A'} - ${w.details?.accountNumber || 'N/A'}`}
+                              </div>
+                            </td>
+                            <td className="px-8 py-6">
+                              <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider border ${w.status === 'completed' ? 'bg-green-900/10 text-green-500 border-green-900/50' :
+                                w.status === 'pending' ? 'bg-yellow-900/10 text-yellow-500 border-yellow-900/50' :
+                                  'bg-red-900/10 text-red-500 border-red-900/50'
                                 }`}>
                                 {w.status}
                               </span>
@@ -864,7 +905,7 @@ const AdminPanel = () => {
                           </tr>
                         )) : (
                           <tr>
-                            <td colSpan="4" className="px-8 py-12 text-center text-gray-500 italic">No withdrawals yet.</td>
+                            <td colSpan="4" className="px-8 py-20 text-center text-gray-500 italic">No commission withdrawals initiated yet.</td>
                           </tr>
                         )}
                       </tbody>
@@ -1134,56 +1175,146 @@ const AdminPanel = () => {
         )}
         {/* WITHDRAWAL MODAL */}
         {showWithdrawModal && (
-          <div className="fixed inset-0 bg-black/90 backdrop-blur-xl z-[60] flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] flex items-center justify-center p-4">
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-gray-900 border border-gray-800 w-full max-w-md rounded-[40px] shadow-2xl shadow-purple-900/40"
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 30 }}
+              className="bg-gray-900 border border-gray-800 w-full max-w-xl rounded-[3rem] shadow-2xl shadow-purple-900/40 relative overflow-hidden flex flex-col max-h-[90vh]"
             >
-              <div className="p-8 border-b border-gray-800 flex justify-between items-center">
-                <h2 className="text-2xl font-black text-white flex items-center gap-3">
-                  <FaWallet className="text-purple-500" /> Withdraw Funds
-                </h2>
-                <button onClick={() => setShowWithdrawModal(false)} className="bg-black/50 text-gray-500 hover:text-white p-3 rounded-full transition-colors border border-gray-800">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-600/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+
+              <div className="p-10 border-b border-gray-800 flex justify-between items-center relative z-10">
+                <div>
+                  <h2 className="text-3xl font-black text-white flex items-center gap-4">
+                    <FaWallet className="text-purple-500" /> Payout Request
+                  </h2>
+                  <p className="text-gray-400 text-sm mt-1">Authorized Admin Withdrawal</p>
+                </div>
+                <button
+                  onClick={() => setShowWithdrawModal(false)}
+                  className="bg-black/50 text-gray-500 hover:text-white p-3 rounded-full transition-colors border border-gray-800"
+                >
                   <FaTimes />
                 </button>
               </div>
 
-              <form onSubmit={handleWithdraw} className="p-8 space-y-6">
+              <form onSubmit={handleWithdraw} className="p-10 space-y-8 overflow-y-auto">
                 <div>
-                  <div className="flex justify-between mb-3">
-                    <label className="text-xs font-black text-gray-500 uppercase tracking-widest">Withdrawal Amount (₹)</label>
-                    <span className="text-[10px] text-purple-400 font-bold">Max: ₹{commissionData.currentBalance?.toLocaleString()}</span>
+                  <div className="flex justify-between mb-4">
+                    <label className="text-xs font-black text-gray-500 uppercase tracking-widest">Amount to Transfer (₹)</label>
+                    <span className="text-[10px] text-purple-400 font-bold uppercase tracking-widest">Limit: ₹{commissionData.currentBalance?.toLocaleString()}</span>
                   </div>
-                  <input
-                    required
-                    type="number"
-                    max={commissionData.currentBalance}
-                    className="w-full bg-black border-2 border-gray-800 focus:border-purple-600 rounded-2xl p-4 text-white font-black focus:outline-none transition-all"
-                    placeholder="Enter amount..."
-                    value={withdrawAmount}
-                    onChange={(e) => setWithdrawAmount(e.target.value)}
-                  />
+                  <div className="relative">
+                    <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-gray-600">₹</span>
+                    <input
+                      required
+                      type="number"
+                      max={commissionData.currentBalance}
+                      className="w-full bg-black border-2 border-gray-800 focus:border-purple-600 rounded-2xl py-6 pl-12 pr-6 text-2xl font-black text-white focus:outline-none transition-all"
+                      placeholder="0.00"
+                      value={withdrawAmount}
+                      onChange={(e) => setWithdrawAmount(e.target.value)}
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Bank / Payout Details</label>
-                  <textarea
-                    required
-                    className="w-full bg-black border-2 border-gray-800 focus:border-purple-600 rounded-2xl p-4 text-white font-medium focus:outline-none transition-all min-h-[100px] resize-none"
-                    placeholder="UPI ID or Bank Account Details..."
-                    value={bankDetails}
-                    onChange={(e) => setBankDetails(e.target.value)}
-                  />
+                <div className="flex gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setWithdrawMethod("bank")}
+                    className={`flex-1 p-6 rounded-2xl border-2 flex flex-col items-center gap-3 transition-all ${withdrawMethod === 'bank' ? 'border-purple-600 bg-purple-600/10' : 'border-gray-800 bg-black hover:border-gray-700'
+                      }`}
+                  >
+                    <FaUniversity className={withdrawMethod === 'bank' ? 'text-purple-400' : 'text-gray-500'} />
+                    <span className="font-bold text-xs uppercase tracking-widest">Bank Payout</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setWithdrawMethod("upi")}
+                    className={`flex-1 p-6 rounded-2xl border-2 flex flex-col items-center gap-3 transition-all ${withdrawMethod === 'upi' ? 'border-purple-600 bg-purple-600/10' : 'border-gray-800 bg-black hover:border-gray-700'
+                      }`}
+                  >
+                    <FaMobileAlt className={withdrawMethod === 'upi' ? 'text-purple-400' : 'text-gray-500'} />
+                    <span className="font-bold text-xs uppercase tracking-widest">UPI Transfer</span>
+                  </button>
                 </div>
 
-                <button
-                  type="submit"
-                  className="w-full bg-purple-600 text-white py-5 rounded-2xl font-black text-lg hover:bg-white hover:text-black transition-all shadow-xl"
-                >
-                  Confirm Withdrawal
-                </button>
+                <AnimatePresence mode="wait">
+                  {withdrawMethod === 'bank' ? (
+                    <motion.div
+                      key="bank"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 10 }}
+                      className="grid gap-4"
+                    >
+                      <input
+                        required
+                        type="text"
+                        placeholder="Organization Bank Name"
+                        value={bankDetails.bankName}
+                        onChange={(e) => setBankDetails({ ...bankDetails, bankName: e.target.value })}
+                        className="w-full bg-black border border-gray-800 rounded-xl p-4 font-bold focus:border-purple-600 outline-none transition-all text-white"
+                      />
+                      <input
+                        required
+                        type="text"
+                        placeholder="Corporate Account Number"
+                        value={bankDetails.accountNumber}
+                        onChange={(e) => setBankDetails({ ...bankDetails, accountNumber: e.target.value })}
+                        className="w-full bg-black border border-gray-800 rounded-xl p-4 font-bold focus:border-purple-600 outline-none transition-all text-white"
+                      />
+                      <input
+                        required
+                        type="text"
+                        placeholder="IFSC Routing Code"
+                        value={bankDetails.ifscCode}
+                        onChange={(e) => setBankDetails({ ...bankDetails, ifscCode: e.target.value })}
+                        className="w-full bg-black border border-gray-800 rounded-xl p-4 font-bold focus:border-purple-600 outline-none transition-all text-white"
+                      />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="upi"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 10 }}
+                    >
+                      <input
+                        required
+                        type="text"
+                        placeholder="Admin Corporate UPI ID"
+                        value={bankDetails.upiId}
+                        onChange={(e) => setBankDetails({ ...bankDetails, upiId: e.target.value })}
+                        className="w-full bg-black border border-gray-800 rounded-xl p-4 font-bold focus:border-purple-600 outline-none transition-all text-white"
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="bg-purple-900/10 border border-purple-900/30 p-5 rounded-2xl flex items-start gap-4">
+                  <FaShieldAlt className="text-purple-500 mt-1 shrink-0" />
+                  <p className="text-[11px] text-purple-200 leading-relaxed font-medium">
+                    This withdrawal will be recorded as a platform expenditure. Ensure all details match the official corporate accounts. Payouts are processed via Stripe Connect.
+                  </p>
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowWithdrawModal(false)}
+                    className="flex-1 bg-black border border-gray-800 text-gray-400 py-5 rounded-2xl font-black hover:bg-gray-800 transition-all uppercase tracking-widest text-xs"
+                  >
+                    Discard
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-[2] bg-purple-600 text-white py-5 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-all shadow-xl shadow-purple-900/40"
+                  >
+                    Confirm Payout
+                  </button>
+                </div>
               </form>
             </motion.div>
           </div>
