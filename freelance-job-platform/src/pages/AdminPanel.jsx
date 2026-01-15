@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import API from "../api/axios";
 import toast from "react-hot-toast";
-import { FaChartLine, FaWallet, FaUsers, FaCheckCircle, FaShieldAlt, FaTrash, FaPlus, FaTimes, FaBriefcase, FaLayerGroup, FaCalendarAlt, FaExclamationCircle, FaEdit, FaSync, FaEnvelope, FaPaperPlane, FaComments, FaInbox } from "react-icons/fa";
+import { FaChartLine, FaWallet, FaUsers, FaCheckCircle, FaShieldAlt, FaTrash, FaPlus, FaTimes, FaBriefcase, FaLayerGroup, FaCalendarAlt, FaExclamationCircle, FaEdit, FaSync, FaEnvelope, FaPaperPlane, FaComments, FaInbox, FaHistory, FaUniversity, FaMobileAlt } from "react-icons/fa";
 
 const AdminPanel = () => {
   const [stats, setStats] = useState({});
