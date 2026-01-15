@@ -14,6 +14,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Profile from "./pages/Profile";
 import Messages from "./pages/Messages";
+import Wallet from "./pages/Wallet";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ChatBot from "./components/ChatBot";
@@ -41,6 +42,7 @@ function App() {
             <Route path="/reviews/:userId" element={<Reviews />} />
             <Route path="/profile/:id" element={<Profile />} />
             <Route path="/messages" element={<Messages />} />
+            <Route path="/wallet" element={<Wallet />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
           </Routes>

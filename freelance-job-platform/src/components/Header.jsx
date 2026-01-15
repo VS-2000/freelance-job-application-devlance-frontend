@@ -51,6 +51,12 @@ const Header = () => {
                   </NavLink>
                 )}
 
+                {user.role?.toLowerCase() === "freelancer" && (
+                  <NavLink to="/wallet" className={navLinkClass}>
+                    Wallet
+                  </NavLink>
+                )}
+
                 <NavLink to="/messages" className={navLinkClass}>
                   <FaEnvelope size={16} /> Messages
                 </NavLink>
@@ -151,6 +157,9 @@ const Header = () => {
                   <NavLink to="/messages" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>Messages</NavLink>
                   {user.role?.toLowerCase() === "client" && (
                     <NavLink to="/post-job" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>Post a Job</NavLink>
+                  )}
+                  {user.role?.toLowerCase() === "freelancer" && (
+                    <NavLink to="/wallet" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>Wallet</NavLink>
                   )}
                   {user.role?.toLowerCase() === "admin" && (
                     <NavLink to="/admin" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>Admin Panel</NavLink>
