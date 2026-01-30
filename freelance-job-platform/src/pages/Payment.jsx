@@ -138,7 +138,7 @@ const Payment = () => {
           <form className="space-y-6 relative z-10" onSubmit={(e) => { e.preventDefault(); handlePayment(); }}>
             <div>
               <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Cardholder Name</label>
-              <input type="text" placeholder="John Doe" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl p-4 font-bold focus:border-purple-600 focus:outline-none transition-all" />
+              <input type="text" placeholder="Cardholder Name" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl p-4 font-bold focus:border-purple-600 focus:outline-none transition-all" />
             </div>
 
             <div>
