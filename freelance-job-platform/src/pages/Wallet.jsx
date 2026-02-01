@@ -145,7 +145,7 @@ const Wallet = () => {
                                     <p>No earnings recorded yet.</p>
                                 </div>
                             ) : (
-                                data.earnings.map((earning) => (
+                                {(data.earnings || []).map((earning) => (
                                     <div key={earning._id} className="bg-[#0c0c0c]/50 border border-gray-800 p-5 rounded-2xl flex items-center justify-between hover:border-gray-700 transition-colors">
                                         <div className="flex items-center gap-4">
                                             <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center text-green-500 border border-green-500/20 shrink-0">
@@ -178,12 +178,12 @@ const Wallet = () => {
                                     <p>No withdrawals initiated yet.</p>
                                 </div>
                             ) : (
-                                data.withdrawals.map((w) => (
+                                {(data.withdrawals || []).map((w) => (
                                     <div key={w._id} className="bg-[#0c0c0c]/50 border border-gray-800 p-5 rounded-2xl flex items-center justify-between hover:border-gray-700 transition-colors">
                                         <div className="flex items-center gap-4">
                                             <div className={`w-12 h-12 rounded-full flex items-center justify-center border shrink-0 ${w.status === 'completed' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
-                                                    w.status === 'failed' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
-                                                        'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
+                                                w.status === 'failed' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                                                    'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
                                                 }`}>
                                                 {w.status === 'completed' ? <FaCheckCircle /> : w.status === 'failed' ? <FaTimesCircle /> : <FaClock />}
                                             </div>
@@ -195,8 +195,8 @@ const Wallet = () => {
                                         <div className="text-right">
                                             <p className="font-black text-white">-₹{w.amount.toLocaleString()}</p>
                                             <p className={`text-[10px] uppercase font-bold tracking-widest ${w.status === 'completed' ? 'text-green-500' :
-                                                    w.status === 'failed' ? 'text-red-500' :
-                                                        'text-yellow-500'
+                                                w.status === 'failed' ? 'text-red-500' :
+                                                    'text-yellow-500'
                                                 }`}>{w.status}</p>
                                         </div>
                                     </div>

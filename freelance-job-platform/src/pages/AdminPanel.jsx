@@ -110,7 +110,7 @@ const AdminPanel = () => {
       const res = await API.put(`/admin/verify/${userId}`);
       const updatedUser = res.data.user;
       toast.success(res.data.message);
-      setUsers(users.map(u => u._id === userId ? { ...u, isVerified: updatedUser.isVerified } : u));
+      setUsers((users || []).map(u => u._id === userId ? { ...u, isVerified: updatedUser.isVerified } : u));
     } catch (err) {
       console.error("Verification error:", err);
       toast.error("Process failed: " + (err.response?.data?.message || err.message));
@@ -143,7 +143,7 @@ const AdminPanel = () => {
   const handleUpdatePaymentStatus = async (paymentId, status) => {
     try {
       await API.put(`/admin/payments/${paymentId}`, { status });
-      setPayments(payments.map(p => p._id === paymentId ? { ...p, status } : p));
+      setPayments((payments || []).map(p => p._id === paymentId ? { ...p, status } : p));
       toast.success("Status updated");
     } catch (err) {
       toast.error("Failed to update status");
@@ -351,7 +351,7 @@ const AdminPanel = () => {
 
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex gap-4 mb-8 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-800">
-          {[
+          {(Array.isArray(tabs) ? tabs : [
             { id: "stats", label: "Stats Overview", icon: FaChartLine },
             { id: "payments", label: "Payment Ledger", icon: FaWallet },
             { id: "users", label: "User Management", icon: FaUsers },
@@ -360,7 +360,7 @@ const AdminPanel = () => {
             { id: "contacts", label: "Contact Messages", icon: FaEnvelope },
             { id: "messages", label: "Direct Messages", icon: FaComments },
             { id: "withdrawals", label: "Withdrawals", icon: FaWallet },
-          ].map((tab) => (
+          ]).map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
@@ -399,7 +399,7 @@ const AdminPanel = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-800 font-medium text-sm text-gray-300">
-                      {(activeTab === "jobs" ? jobs : adminJobs).map((j) => (
+                      {(activeTab === "jobs" ? (jobs || []) : (adminJobs || [])).map((j) => (
                         <tr key={j._id} className="hover:bg-black/30 transition-colors">
                           <td className="px-8 py-6 max-w-xs">
                             <div className="font-bold text-white truncate">{j.title}</div>
@@ -498,7 +498,7 @@ const AdminPanel = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-800 font-medium text-sm text-gray-300">
-                      {payments.map((p) => (
+                      {(payments || []).map((p) => (
                         <tr key={p._id} className="hover:bg-black/30 transition-colors">
                           <td className="px-8 py-6 font-mono text-xs text-gray-500">{p._id}</td>
                           <td className="px-8 py-6">
@@ -552,7 +552,7 @@ const AdminPanel = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-800 font-medium text-sm text-gray-300">
-                      {users
+                      {(users || [])
                         .filter(u => filterRole === "all" || u.role === filterRole)
                         .map((u) => (
                           <tr key={u._id} className="hover:bg-black/30 transition-colors">
@@ -617,7 +617,7 @@ const AdminPanel = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-800 font-medium text-sm text-gray-300">
-                      {contacts.length > 0 ? (
+                      {(contacts || []).length > 0 ? (
                         contacts.map((contact) => (
                           <tr key={contact._id} className="hover:bg-black/30 transition-colors">
                             <td className="px-8 py-6">
@@ -711,7 +711,7 @@ const AdminPanel = () => {
                   <div className="flex-1 overflow-y-auto">
                     {showUserPicker ? (
                       <div className="space-y-1">
-                        {users
+                        {(users || [])
                           .filter(u => u.role !== 'admin' && (u.name.toLowerCase().includes(userSearch.toLowerCase()) || u.email.toLowerCase().includes(userSearch.toLowerCase())))
                           .map((u, idx) => (
                             <button
@@ -733,8 +733,8 @@ const AdminPanel = () => {
                         {users.length === 0 && <div className="p-8 text-center text-gray-500 text-sm">No users found.</div>}
                       </div>
                     ) : (
-                      directMessages.length > 0 ? (
-                        directMessages.map((conv, idx) => (
+                      {(directMessages || []).length > 0 ? (
+                        (directMessages || []).map((conv, idx) => (
                           <button
                             key={idx}
                             onClick={() => handleSelectUser(conv.otherUser)}
@@ -768,7 +768,7 @@ const AdminPanel = () => {
                       </div>
 
                       <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                        {currentMessages.map((msg, idx) => (
+                        {(currentMessages || []).map((msg, idx) => (
                           <div
                             key={idx}
                             className={`flex ${msg.sender._id === selectedUser._id ? 'justify-start' : 'justify-end'}`}
@@ -884,7 +884,7 @@ const AdminPanel = () => {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-800 font-medium text-sm text-gray-300">
-                        {withdrawals.length > 0 ? withdrawals.map((w) => (
+                        {(withdrawals || []).length > 0 ? withdrawals.map((w) => (
                           <tr key={w._id} className="hover:bg-black/30 transition-colors">
                             <td className="px-8 py-6">{new Date(w.createdAt).toLocaleDateString()}</td>
                             <td className="px-8 py-6 font-black text-white">₹{w.amount.toLocaleString()}</td>
@@ -975,7 +975,7 @@ const AdminPanel = () => {
                       value={newJobData.category}
                       onChange={(e) => setNewJobData({ ...newJobData, category: e.target.value })}
                     >
-                      {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                      {(categories || []).map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
 
@@ -988,7 +988,7 @@ const AdminPanel = () => {
                       value={newJobData.experienceLevel}
                       onChange={(e) => setNewJobData({ ...newJobData, experienceLevel: e.target.value })}
                     >
-                      {levels.map(l => <option key={l} value={l}>{l}</option>)}
+                      {(levels || []).map(l => <option key={l} value={l}>{l}</option>)}
                     </select>
                   </div>
                 </div>

@@ -332,7 +332,7 @@ const Profile = () => {
                         </div>
                         <div className="flex flex-wrap gap-2">
                             {(isEditing ? formData.skills : profile.skills)?.length > 0 ? (
-                                (isEditing ? formData.skills : profile.skills).map((skill, idx) => (
+                                (isEditing ? (formData.skills || []) : (profile.skills || [])).map((skill, idx) => (
                                     <span key={idx} className="bg-black border border-gray-700 text-gray-300 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2">
                                         {skill}
                                         {isEditing && <button onClick={() => handleRemoveSkill(idx)} className="text-red-500 hover:text-red-400"><FaTimes /></button>}
@@ -350,7 +350,7 @@ const Profile = () => {
                     {/* Tabs */}
                     < div className="flex gap-6 border-b border-gray-800 mb-8 overflow-x-auto" >
                         {
-                            ['overview', 'portfolio', 'reviews', ...(isOwnProfile ? ['my-jobs'] : [])].map((tab) => (
+                            (['overview', 'portfolio', 'reviews', ...(isOwnProfile ? ['my-jobs'] : [])] || []).map((tab) => (
                                 <button
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
@@ -410,8 +410,8 @@ const Profile = () => {
                                 </div>
 
                                 <div className="grid md:grid-cols-2 gap-6">
-                                    {(isEditing ? formData.portfolio : profile.portfolio)?.length > 0 ? (
-                                        (isEditing ? formData.portfolio : profile.portfolio).map((item, index) => (
+                                    {((isEditing ? (formData.portfolio || []) : (profile.portfolio || [])) || []).length > 0 ? (
+                                        ((isEditing ? (formData.portfolio || []) : (profile.portfolio || [])) || []).map((item, index) => (
                                             <div key={index} className="group bg-gray-900 rounded-3xl overflow-hidden border border-gray-800 hover:border-purple-600/50 transition-colors relative">
                                                 {isEditing && (
                                                     <button
@@ -491,12 +491,12 @@ const Profile = () => {
 
                                 {reviews.length > 0 ? (
                                     <div className="space-y-4">
-                                        {reviews.map((r) => (
+                                        {(reviews || []).map((r) => (
                                             <div key={r._id} className="bg-gray-900 border border-gray-800 p-6 rounded-2xl shadow-lg hover:border-purple-600/30 transition-all">
                                                 <div className="flex items-center justify-between mb-3">
                                                     <div className="flex items-center gap-2">
                                                         <span className="text-yellow-500 flex gap-1">
-                                                            {[...Array(5)].map((_, i) => (
+                                                            {([...Array(5)] || []).map((_, i) => (
                                                                 <FaStar key={i} className={i < r.rating ? "text-yellow-500" : "text-gray-700"} />
                                                             ))}
                                                         </span>
@@ -536,7 +536,7 @@ const Profile = () => {
                                 </div>
                                 {myJobs.length > 0 ? (
                                     <div className="grid gap-4">
-                                        {myJobs.map(job => (
+                                        {(myJobs || []).map(job => (
                                             <div key={job._id} className="bg-gray-900 border border-gray-800 rounded-3xl p-6 hover:border-purple-600/50 transition-all group">
                                                 <div className="flex flex-col md:flex-row justify-between gap-4">
                                                     <div className="space-y-2">
@@ -562,7 +562,7 @@ const Profile = () => {
                                                                     <span className="text-xs font-bold text-gray-300">Hired: {job.freelancer.name}</span>
                                                                 </div>
                                                                 <div className="flex flex-wrap gap-1">
-                                                                    {job.freelancer.skills?.slice(0, 3).map((skill, i) => (
+                                                                    {(job.freelancer.skills || []).slice(0, 3).map((skill, i) => (
                                                                         <span key={i} className="text-[9px] bg-black text-gray-500 px-2 py-0.5 rounded border border-gray-800 uppercase font-bold">
                                                                             {skill}
                                                                         </span>
@@ -585,7 +585,7 @@ const Profile = () => {
                                                             <div className="mt-6 pt-6 border-t border-gray-800 space-y-4">
                                                                 <h5 className="text-[10px] font-black uppercase tracking-widest text-purple-500 mb-2">Pending Proposals ({job.proposals.length})</h5>
                                                                 <div className="space-y-3">
-                                                                    {job.proposals.slice(0, 3).map((p, idx) => (
+                                                                    {(job.proposals || []).slice(0, 3).map((p, idx) => (
                                                                         <div key={idx} className="bg-black/40 border border-gray-800/50 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4">
                                                                             <div className="flex items-center gap-3">
                                                                                 <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center text-xs font-bold text-white">
@@ -594,7 +594,7 @@ const Profile = () => {
                                                                                 <div>
                                                                                     <div className="text-sm font-bold text-white">{p.freelancer?.name}</div>
                                                                                     <div className="flex gap-1 flex-wrap mt-1">
-                                                                                        {p.freelancer?.skills?.slice(0, 2).map((s, i) => (
+                                                                                        {(p.freelancer?.skills || []).slice(0, 2).map((s, i) => (
                                                                                             <span key={i} className="text-[8px] bg-gray-900 text-gray-400 px-1.5 py-0.5 rounded border border-gray-800 font-bold uppercase">{s}</span>
                                                                                         ))}
                                                                                     </div>

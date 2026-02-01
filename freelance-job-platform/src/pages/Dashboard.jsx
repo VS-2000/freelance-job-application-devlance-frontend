@@ -123,7 +123,7 @@ const Dashboard = () => {
                 >
                   All Categories
                 </button>
-                {categories.map((cat) => (
+                {(categories || []).map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setCategory(cat)}
@@ -166,7 +166,7 @@ const Dashboard = () => {
 
             {loading ? (
               <div className="grid md:grid-cols-2 gap-6 animate-pulse">
-                {[1, 2, 3, 4].map(i => (
+                {([1, 2, 3, 4]).map(i => (
                   <div key={i} className="h-64 bg-gray-900 rounded-3xl border border-gray-800"></div>
                 ))}
               </div>
@@ -191,7 +191,7 @@ const Dashboard = () => {
                 ) : (
                   <>
                     <div className="grid md:grid-cols-2 gap-6">
-                      {(showAll ? jobs : jobs.slice(0, 4)).map((job) => (
+                      {(showAll ? (jobs || []) : (jobs || []).slice(0, 4)).map((job) => (
                         <JobCard key={job._id} job={job} />
                       ))}
                     </div>
