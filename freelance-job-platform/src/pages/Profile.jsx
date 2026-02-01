@@ -30,8 +30,8 @@ const Profile = () => {
         portfolio: []
     });
 
-    const averageRating = reviews.length > 0
-        ? (reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviews.length).toFixed(1)
+    const averageRating = Array.isArray(reviews) && reviews.length > 0
+        ? (reviews.reduce((acc, rev) => acc + (rev.rating || 0), 0) / reviews.length).toFixed(1)
         : "N/A";
 
     useEffect(() => {
@@ -619,7 +619,7 @@ const Profile = () => {
                                                                             </div>
                                                                         </div>
                                                                     ))}
-                                                                    {job.proposals.length > 3 && (
+                                                                    {Array.isArray(job.proposals) && job.proposals.length > 3 && (
                                                                         <p className="text-[10px] text-gray-600 font-bold text-center">+{job.proposals.length - 3} more proposals received</p>
                                                                     )}
                                                                 </div>

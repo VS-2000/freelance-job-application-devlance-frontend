@@ -47,9 +47,9 @@ const Messages = () => {
                     <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700">
                         {loading ? (
                             <div className="p-10 text-center animate-pulse text-gray-500">Loading inbox...</div>
-                        ) : conversations.length === 0 ? (
+                        ) : (Array.isArray(conversations) && conversations.length === 0) ? (
                             <div className="p-10 text-center text-gray-500 italic">Your inbox is empty.</div>
-                        ) : (
+                        ) : Array.isArray(conversations) ? (
                             conversations.map((conv, idx) => {
                                 const isSelected = selectedChat?.otherUser?._id === conv.otherUser._id &&
                                     ((!selectedChat?.job && !conv.job) || (selectedChat?.job?._id === conv.job?._id));
@@ -79,7 +79,7 @@ const Messages = () => {
                                     </button>
                                 );
                             })
-                        )}
+                        ) : null}
                     </div>
                 </aside>
 

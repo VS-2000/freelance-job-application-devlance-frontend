@@ -399,7 +399,7 @@ const AdminPanel = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-800 font-medium text-sm text-gray-300">
-                      {(activeTab === "jobs" ? (jobs || []) : (adminJobs || [])).map((j) => (
+                      {Array.isArray(activeTab === "jobs" ? jobs : adminJobs) && (activeTab === "jobs" ? jobs : adminJobs).map((j) => (
                         <tr key={j._id} className="hover:bg-black/30 transition-colors">
                           <td className="px-8 py-6 max-w-xs">
                             <div className="font-bold text-white truncate">{j.title}</div>
@@ -498,7 +498,7 @@ const AdminPanel = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-800 font-medium text-sm text-gray-300">
-                      {(payments || []).map((p) => (
+                      {Array.isArray(payments) && payments.map((p) => (
                         <tr key={p._id} className="hover:bg-black/30 transition-colors">
                           <td className="px-8 py-6 font-mono text-xs text-gray-500">{p._id}</td>
                           <td className="px-8 py-6">
@@ -552,7 +552,7 @@ const AdminPanel = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-800 font-medium text-sm text-gray-300">
-                      {(users || [])
+                      {Array.isArray(users) && users
                         .filter(u => filterRole === "all" || u.role === filterRole)
                         .map((u) => (
                           <tr key={u._id} className="hover:bg-black/30 transition-colors">
@@ -617,7 +617,7 @@ const AdminPanel = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-800 font-medium text-sm text-gray-300">
-                      {(contacts || []).length > 0 ? (
+                      {Array.isArray(contacts) && contacts.length > 0 ? (
                         contacts.map((contact) => (
                           <tr key={contact._id} className="hover:bg-black/30 transition-colors">
                             <td className="px-8 py-6">
@@ -711,7 +711,7 @@ const AdminPanel = () => {
                   <div className="flex-1 overflow-y-auto">
                     {showUserPicker ? (
                       <div className="space-y-1">
-                        {(users || [])
+                        {Array.isArray(users) && users
                           .filter(u => u.role !== 'admin' && (u.name.toLowerCase().includes(userSearch.toLowerCase()) || u.email.toLowerCase().includes(userSearch.toLowerCase())))
                           .map((u, idx) => (
                             <button
@@ -768,7 +768,7 @@ const AdminPanel = () => {
                       </div>
 
                       <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                        {(currentMessages || []).map((msg, idx) => (
+                        {Array.isArray(currentMessages) && currentMessages.map((msg, idx) => (
                           <div
                             key={idx}
                             className={`flex ${msg.sender._id === selectedUser._id ? 'justify-start' : 'justify-end'}`}
@@ -884,7 +884,7 @@ const AdminPanel = () => {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-800 font-medium text-sm text-gray-300">
-                        {(withdrawals || []).length > 0 ? withdrawals.map((w) => (
+                        {Array.isArray(withdrawals) && withdrawals.length > 0 ? withdrawals.map((w) => (
                           <tr key={w._id} className="hover:bg-black/30 transition-colors">
                             <td className="px-8 py-6">{new Date(w.createdAt).toLocaleDateString()}</td>
                             <td className="px-8 py-6 font-black text-white">₹{w.amount.toLocaleString()}</td>
@@ -975,7 +975,7 @@ const AdminPanel = () => {
                       value={newJobData.category}
                       onChange={(e) => setNewJobData({ ...newJobData, category: e.target.value })}
                     >
-                      {(categories || []).map(c => <option key={c} value={c}>{c}</option>)}
+                      {Array.isArray(categories) && categories.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
 
@@ -988,7 +988,7 @@ const AdminPanel = () => {
                       value={newJobData.experienceLevel}
                       onChange={(e) => setNewJobData({ ...newJobData, experienceLevel: e.target.value })}
                     >
-                      {(levels || []).map(l => <option key={l} value={l}>{l}</option>)}
+                      {Array.isArray(levels) && levels.map(l => <option key={l} value={l}>{l}</option>)}
                     </select>
                   </div>
                 </div>
@@ -1055,13 +1055,13 @@ const AdminPanel = () => {
               </div>
 
               <div className="p-8 overflow-y-auto space-y-6">
-                {selectedJobProposals?.proposals?.length === 0 ? (
+                {!Array.isArray(selectedJobProposals?.proposals) || selectedJobProposals.proposals.length === 0 ? (
                   <div className="text-center py-20 bg-black/20 rounded-3xl border border-dashed border-gray-800">
                     <FaExclamationCircle className="text-gray-700 text-4xl mx-auto mb-4" />
                     <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">No proposals received yet.</p>
                   </div>
                 ) : (
-                  selectedJobProposals?.proposals?.map((p) => (
+                  selectedJobProposals.proposals.map((p) => (
                     <div key={p._id} className="bg-black/40 border border-gray-800 p-6 rounded-3xl flex flex-col md:flex-row gap-6 hover:border-gray-700 transition-all">
                       <div className="flex-1">
                         <div className="flex justify-between items-start mb-4">
