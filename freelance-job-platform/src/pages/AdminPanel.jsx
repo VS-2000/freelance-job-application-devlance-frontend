@@ -351,7 +351,7 @@ const AdminPanel = () => {
 
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex gap-4 mb-8 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-800">
-          {(Array.isArray(tabs) ? tabs : [
+          {[
             { id: "stats", label: "Stats Overview", icon: FaChartLine },
             { id: "payments", label: "Payment Ledger", icon: FaWallet },
             { id: "users", label: "User Management", icon: FaUsers },
@@ -360,7 +360,7 @@ const AdminPanel = () => {
             { id: "contacts", label: "Contact Messages", icon: FaEnvelope },
             { id: "messages", label: "Direct Messages", icon: FaComments },
             { id: "withdrawals", label: "Withdrawals", icon: FaWallet },
-          ]).map((tab) => (
+          ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}

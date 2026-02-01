@@ -108,7 +108,7 @@ const Wallet = () => {
                             <FaArrowDown />
                         </div>
                         <p className="text-gray-500 text-sm font-bold uppercase tracking-widest mb-1">Total Earnings</p>
-                        <p className="text-2xl font-black">₹{data.earnings.reduce((sum, e) => sum + (e.amount - (e.commissionAmount || 0)), 0).toLocaleString()}</p>
+                        <p className="text-2xl font-black">₹{(data.earnings || []).reduce((sum, e) => sum + (e.amount - (e.commissionAmount || 0)), 0).toLocaleString()}</p>
                     </div>
 
                     {/* Card: Pending Withdrawals */}
@@ -117,7 +117,7 @@ const Wallet = () => {
                             <FaClock />
                         </div>
                         <p className="text-gray-500 text-sm font-bold uppercase tracking-widest mb-1">Pending Payouts</p>
-                        <p className="text-2xl font-black">₹{data.withdrawals.filter(w => w.status === 'pending').reduce((sum, w) => sum + w.amount, 0).toLocaleString()}</p>
+                        <p className="text-2xl font-black">₹{(data.withdrawals || []).filter(w => w.status === 'pending').reduce((sum, w) => sum + w.amount, 0).toLocaleString()}</p>
                     </div>
 
                     {/* Card: Recent Transaction */}
@@ -127,7 +127,7 @@ const Wallet = () => {
                         </div>
                         <p className="text-gray-500 text-sm font-bold uppercase tracking-widest mb-1">Last Withdrawal</p>
                         <p className="text-2xl font-black">
-                            {data.withdrawals.length > 0 ? `₹${data.withdrawals[0].amount.toLocaleString()}` : "N/A"}
+                            {(data.withdrawals || []).length > 0 ? `₹${data.withdrawals[0].amount.toLocaleString()}` : "N/A"}
                         </p>
                     </div>
                 </div>
