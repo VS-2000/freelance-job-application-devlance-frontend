@@ -12,7 +12,8 @@ const Reviews = () => {
     const fetchReviews = async () => {
       try {
         const { data } = await API.get(`/ reviews / ${userId} `);
-        setReviews(data);
+        const reviewsArray = Array.isArray(data) ? data : (data?.data && Array.isArray(data.data) ? data.data : []);
+        setReviews(reviewsArray);
       } catch (err) {
         console.error("Failed to fetch reviews");
       }
@@ -38,7 +39,7 @@ const Reviews = () => {
         </motion.h2>
 
         <div className="space-y-4">
-          {reviews.length > 0 ? (
+          {Array.isArray(reviews) && reviews.length > 0 ? (
             reviews.map((r) => (
               <div key={r._id} className="bg-gray-900 border border-gray-800 p-6 rounded-2xl shadow-lg">
                 <div className="flex items-center justify-between mb-3">

@@ -20,7 +20,13 @@ const Wallet = () => {
     const fetchWalletData = async () => {
         try {
             const { data } = await API.get("/wallet/data");
-            setData(data);
+            // Handle unwrapping if needed
+            const walletData = data?.data && typeof data.data === 'object' ? data.data : data;
+            setData({
+                balance: walletData.balance || 0,
+                earnings: Array.isArray(walletData.earnings) ? walletData.earnings : [],
+                withdrawals: Array.isArray(walletData.withdrawals) ? walletData.withdrawals : []
+            });
         } catch (err) {
             toast.error("Failed to fetch wallet data");
         } finally {
@@ -140,12 +146,12 @@ const Wallet = () => {
                             <h3 className="text-2xl font-black">Recent Earnings</h3>
                         </div>
                         <div className="space-y-4">
-                            {data.earnings.length === 0 ? (
+                            {Array.isArray(data.earnings) && data.earnings.length === 0 ? (
                                 <div className="p-8 border-2 border-dashed border-gray-800 rounded-3xl text-center text-gray-500">
                                     <p>No earnings recorded yet.</p>
                                 </div>
                             ) : (
-                                (data.earnings || []).map((earning) => (
+                                (Array.isArray(data.earnings) ? data.earnings : []).map((earning) => (
                                     <div key={earning._id} className="bg-[#0c0c0c]/50 border border-gray-800 p-5 rounded-2xl flex items-center justify-between hover:border-gray-700 transition-colors">
                                         <div className="flex items-center gap-4">
                                             <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center text-green-500 border border-green-500/20 shrink-0">
@@ -173,12 +179,12 @@ const Wallet = () => {
                             <h3 className="text-2xl font-black">Withdrawal Status</h3>
                         </div>
                         <div className="space-y-4">
-                            {data.withdrawals.length === 0 ? (
+                            {Array.isArray(data.withdrawals) && data.withdrawals.length === 0 ? (
                                 <div className="p-8 border-2 border-dashed border-gray-800 rounded-3xl text-center text-gray-500">
                                     <p>No withdrawals initiated yet.</p>
                                 </div>
                             ) : (
-                                (data.withdrawals || []).map((w) => (
+                                (Array.isArray(data.withdrawals) ? data.withdrawals : []).map((w) => (
                                     <div key={w._id} className="bg-[#0c0c0c]/50 border border-gray-800 p-5 rounded-2xl flex items-center justify-between hover:border-gray-700 transition-colors">
                                         <div className="flex items-center gap-4">
                                             <div className={`w-12 h-12 rounded-full flex items-center justify-center border shrink-0 ${w.status === 'completed' ? 'bg-green-500/10 text-green-500 border-green-500/20' :

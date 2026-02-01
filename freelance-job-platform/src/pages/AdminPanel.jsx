@@ -65,33 +65,36 @@ const AdminPanel = () => {
 
       const [statsRes, paymentsRes, usersRes, jobsRes, adminJobsRes, contactsRes, messagesRes, commissionRes] = results;
 
-      if (statsRes.status === 'fulfilled') setStats(statsRes.value.data);
+      if (statsRes.status === 'fulfilled') setStats(statsRes.value.data?.data || statsRes.value.data || {});
       else console.error("Stats fetch failed", statsRes.reason);
 
-      if (paymentsRes.status === 'fulfilled') setPayments(paymentsRes.value.data);
+      if (paymentsRes.status === 'fulfilled') setPayments(Array.isArray(paymentsRes.value.data) ? paymentsRes.value.data : (paymentsRes.value.data?.data || []));
       else console.error("Payments fetch failed", paymentsRes.reason);
 
-      if (usersRes.status === 'fulfilled') setUsers(usersRes.value.data);
+      if (usersRes.status === 'fulfilled') setUsers(Array.isArray(usersRes.value.data) ? usersRes.value.data : (usersRes.value.data?.data || []));
       else console.error("Users fetch failed", usersRes.reason);
 
-      if (jobsRes.status === 'fulfilled') setJobs(jobsRes.value.data);
+      if (jobsRes.status === 'fulfilled') setJobs(Array.isArray(jobsRes.value.data) ? jobsRes.value.data : (jobsRes.value.data?.data || []));
       else console.error("Jobs fetch failed", jobsRes.reason);
 
-      if (adminJobsRes.status === 'fulfilled') setAdminJobs(adminJobsRes.value.data);
+      if (adminJobsRes.status === 'fulfilled') setAdminJobs(Array.isArray(adminJobsRes.value.data) ? adminJobsRes.value.data : (adminJobsRes.value.data?.data || []));
       else console.error("Admin jobs fetch failed", adminJobsRes.reason);
 
-      if (contactsRes.status === 'fulfilled') setContacts(contactsRes.value.data);
+      if (contactsRes.status === 'fulfilled') setContacts(Array.isArray(contactsRes.value.data) ? contactsRes.value.data : (contactsRes.value.data?.data || []));
       else console.error("Contacts fetch failed", contactsRes.reason);
 
-      if (messagesRes.status === 'fulfilled') setDirectMessages(messagesRes.value.data);
-      else {
+      if (messagesRes.status === 'fulfilled') {
+        const msgData = messagesRes.value.data;
+        setDirectMessages(Array.isArray(msgData) ? msgData : (msgData?.data || []));
+      } else {
         console.error("Messages fetch failed", messagesRes.reason);
         setDirectMessages([]); // Fallback to empty array
       }
 
       if (commissionRes.status === 'fulfilled') {
-        setWithdrawals(commissionRes.value.data.withdrawals);
-        setCommissionData(commissionRes.value.data);
+        const commData = commissionRes.value.data?.data || commissionRes.value.data || {};
+        setWithdrawals(Array.isArray(commData.withdrawals) ? commData.withdrawals : []);
+        setCommissionData(commData);
       } else console.error("Commission fetch failed", commissionRes.reason);
 
     } catch (err) {

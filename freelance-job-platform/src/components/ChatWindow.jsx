@@ -16,7 +16,8 @@ const ChatWindow = ({ jobId, otherUserId, otherUserName }) => {
                     ? `/messages/${jobId}/${otherUserId}`
                     : `/messages/direct/${otherUserId}`;
                 const { data } = await API.get(endpoint);
-                setMessages(data);
+                const messagesArray = Array.isArray(data) ? data : (data?.data && Array.isArray(data.data) ? data.data : []);
+                setMessages(messagesArray);
             } catch (err) {
                 console.error("Failed to fetch messages", err);
             } finally {
@@ -81,7 +82,7 @@ const ChatWindow = ({ jobId, otherUserId, otherUserName }) => {
             <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50/30">
                 {loading ? (
                     <div className="text-center text-gray-400 p-10 uppercase tracking-widest text-xs">Loading conversation...</div>
-                ) : messages.length === 0 ? (
+                ) : !Array.isArray(messages) || messages.length === 0 ? (
                     <div className="text-center text-gray-400 p-10 italic">No messages yet. Start a conversation!</div>
                 ) : (
                     messages.map((msg) => {

@@ -25,9 +25,12 @@ const Dashboard = () => {
       const { data } = await API.get("/jobs", {
         params: { keyword, category }
       });
-      setJobs(data);
+      // Handle potential wrapped data or direct array
+      const jobsArray = Array.isArray(data) ? data : (data?.data && Array.isArray(data.data) ? data.data : []);
+      setJobs(jobsArray);
     } catch (err) {
-      console.error(err);
+      console.error("Failed to fetch jobs:", err);
+      setJobs([]);
     } finally {
       setLoading(false);
     }
@@ -160,7 +163,7 @@ const Dashboard = () => {
                 className="text-2xl font-bold text-white"
               >
                 {category ? `${category} Jobs` : "Available Opportunities"}
-                <span className="text-gray-500 font-medium ml-2">({jobs.length})</span>
+                <span className="text-gray-500 font-medium ml-2">({(Array.isArray(jobs) ? jobs.length : 0)})</span>
               </motion.h2>
             </div>
 
@@ -191,11 +194,11 @@ const Dashboard = () => {
                 ) : (
                   <>
                     <div className="grid md:grid-cols-2 gap-6">
-                      {(showAll ? (jobs || []) : (jobs || []).slice(0, 4)).map((job) => (
+                      {(Array.isArray(jobs) ? (showAll ? jobs : jobs.slice(0, 4)) : []).map((job) => (
                         <JobCard key={job._id} job={job} />
                       ))}
                     </div>
-                    {jobs.length > 4 && !showAll && (
+                    {Array.isArray(jobs) && jobs.length > 4 && !showAll && (
                       <div className="mt-12 text-center">
                         <button
                           onClick={() => setShowAll(true)}

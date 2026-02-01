@@ -47,23 +47,27 @@ const Profile = () => {
                     API.get(`/users/${id}`),
                     API.get(`/reviews/${id}`)
                 ]);
-                setProfile(profRes.data);
-                setReviews(revRes.data);
+                const profData = Array.isArray(profRes.data) ? profRes.data[0] : profRes.data;
+                setProfile(profData);
+
+                const reviewsArray = Array.isArray(revRes.data) ? revRes.data : (revRes.data?.data && Array.isArray(revRes.data.data) ? revRes.data.data : []);
+                setReviews(reviewsArray);
 
                 // Fetch jobs only if viewing own profile
                 if (currentUser?._id === id) {
                     const jobsRes = await API.get('/jobs/my');
-                    setMyJobs(jobsRes.data);
+                    const jobsArray = Array.isArray(jobsRes.data) ? jobsRes.data : (jobsRes.data?.data && Array.isArray(jobsRes.data.data) ? jobsRes.data.data : []);
+                    setMyJobs(jobsArray);
                 }
 
                 setFormData({
-                    title: profRes.data.title || "",
-                    bio: profRes.data.bio || "",
-                    location: profRes.data.location || "Remote, Earth",
-                    hourlyRate: profRes.data.hourlyRate || "",
-                    profilePicture: profRes.data.profilePicture || "",
-                    skills: profRes.data.skills || [],
-                    portfolio: profRes.data.portfolio || []
+                    title: profData?.title || "",
+                    bio: profData?.bio || "",
+                    location: profData?.location || "Remote, Earth",
+                    hourlyRate: profData?.hourlyRate || "",
+                    profilePicture: profData?.profilePicture || "",
+                    skills: profData?.skills || [],
+                    portfolio: profData?.portfolio || []
                 });
             } catch (err) {
                 console.error("Failed to fetch profile data", err);
@@ -562,12 +566,12 @@ const Profile = () => {
                                                                     <span className="text-xs font-bold text-gray-300">Hired: {job.freelancer.name}</span>
                                                                 </div>
                                                                 <div className="flex flex-wrap gap-1">
-                                                                    {(job.freelancer.skills || []).slice(0, 3).map((skill, i) => (
+                                                                    {Array.isArray(job.freelancer?.skills) && job.freelancer.skills.slice(0, 3).map((skill, i) => (
                                                                         <span key={i} className="text-[9px] bg-black text-gray-500 px-2 py-0.5 rounded border border-gray-800 uppercase font-bold">
                                                                             {skill}
                                                                         </span>
                                                                     ))}
-                                                                    {job.freelancer.skills?.length > 3 && <span className="text-[9px] text-gray-600 font-bold">+{job.freelancer.skills.length - 3} more</span>}
+                                                                    {Array.isArray(job.freelancer?.skills) && job.freelancer.skills.length > 3 && <span className="text-[9px] text-gray-600 font-bold">+{job.freelancer.skills.length - 3} more</span>}
                                                                 </div>
                                                             </div>
                                                         )}
