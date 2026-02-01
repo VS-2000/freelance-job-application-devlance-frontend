@@ -733,7 +733,7 @@ const AdminPanel = () => {
                         {users.length === 0 && <div className="p-8 text-center text-gray-500 text-sm">No users found.</div>}
                       </div>
                     ) : (
-                      {(directMessages || []).length > 0 ? (
+                      (directMessages || []).length > 0 ? (
                         (directMessages || []).map((conv, idx) => (
                           <button
                             key={idx}
