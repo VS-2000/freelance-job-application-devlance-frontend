@@ -77,21 +77,28 @@ const VisionSection = () => {
                     </motion.div>
 
                     {/* Right Content - Cards */}
-                    <div className="grid gap-6">
+                    <div className="grid gap-6 perspective-1000">
                         {highlights.map((item, index) => (
                             <motion.div
                                 key={index}
                                 variants={itemVariants}
-                                whileHover={{ scale: 1.02, x: 10 }}
-                                className="group p-6 bg-gray-900/50 rounded-3xl border border-gray-800 hover:border-purple-500/50 transition-all duration-300"
+                                whileHover={{
+                                    scale: 1.05,
+                                    rotateY: 10,
+                                    rotateX: -5,
+                                    z: 50,
+                                    transition: { duration: 0.3 }
+                                }}
+                                style={{ transformStyle: "preserve-3d" }}
+                                className="group p-8 bg-gray-900/50 rounded-[2rem] border border-gray-800 hover:border-purple-500/50 transition-all duration-300 shadow-xl hover:shadow-purple-900/10"
                             >
-                                <div className="flex items-start gap-5">
-                                    <div className="w-14 h-14 rounded-2xl bg-black border border-gray-800 flex items-center justify-center group-hover:bg-purple-600/10 group-hover:border-purple-600/30 transition-colors">
-                                        <span className="text-2xl">{item.icon}</span>
+                                <div className="flex items-start gap-6" style={{ transform: "translateZ(30px)" }}>
+                                    <div className="w-16 h-16 rounded-2xl bg-black border border-gray-800 flex items-center justify-center group-hover:bg-purple-600/10 group-hover:border-purple-600/30 transition-colors shadow-inner">
+                                        <span className="text-3xl">{item.icon}</span>
                                     </div>
                                     <div className="flex-1">
-                                        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">{item.title}</h3>
-                                        <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
+                                        <h3 className="text-2xl font-black text-white mb-3 group-hover:text-purple-400 transition-colors uppercase tracking-tight">{item.title}</h3>
+                                        <p className="text-gray-400 text-base leading-relaxed font-medium">{item.desc}</p>
                                     </div>
                                 </div>
                             </motion.div>
