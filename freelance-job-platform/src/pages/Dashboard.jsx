@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { motion } from "framer-motion";
 import API from "../api/axios";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -19,29 +19,7 @@ const Dashboard = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { user } = useAuth();
 
-  // 3D Tilt Logic
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const springConfig = { damping: 25, stiffness: 150 };
-  const rotateX = useSpring(useTransform(mouseY, [-300, 300], [10, -10]), springConfig);
-  const rotateY = useSpring(useTransform(mouseX, [-300, 300], [-10, 10]), springConfig);
-
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    mouseX.set(x);
-    mouseY.set(y);
-  };
-
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-  };
-
   const categories = ["Web Dev", "Design", "Writing", "Marketing", "Data Science", "Others"];
-
   const fetchJobs = async () => {
     setLoading(true);
     try {
@@ -62,7 +40,6 @@ const Dashboard = () => {
   useEffect(() => {
     fetchJobs();
   }, [category]); // Re-fetch on category change
-
   const handleSearch = (e) => {
     e.preventDefault();
     fetchJobs();
@@ -71,91 +48,59 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-black">
       {/* Hero Section */}
-      {/* Hero Section */}
-      <div
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        className="relative w-full h-[700px] flex items-center justify-center overflow-hidden mb-8 border-b border-gray-800 perspective-1000"
-      >
-        {/* Animated Background Blobs */}
-        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-          <motion.div
-            animate={{
-              x: [0, 100, 0],
-              y: [0, 50, 0],
-            }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px]"
-          />
-          <motion.div
-            animate={{
-              x: [0, -100, 0],
-              y: [0, -50, 0],
-            }}
-            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-            className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-[120px]"
-          />
-        </div>
-
+      <div className="relative w-full h-[600px] flex items-center justify-center overflow-hidden mb-8 border-b border-gray-800">
         {/* Video Background */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-black/75 z-10" />
+          <div className="absolute inset-0 bg-black/70 z-10" />
           <video
             autoPlay
             loop
             muted
             playsInline
-            className="w-full h-full object-cover opacity-40"
+            className="w-full h-full object-cover"
           >
             <source src="/videos/freelance hero.mp4" type="video/mp4" />
           </video>
         </div>
 
-        {/* Content with 3D Tilt */}
-        <motion.div
-          style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-          className="relative z-10 w-full px-4 md:px-10"
-        >
-          <div className="max-w-4xl mx-auto text-center" style={{ transform: "translateZ(50px)" }}>
+        {/* Content */}
+        <div className="relative z-10 w-full px-4 md:px-10">
+          <div className="max-w-4xl mx-auto text-center">
             <motion.h1
               initial={{ opacity: 0, y: -20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-6xl md:text-8xl font-black text-white mb-6 tracking-tight drop-shadow-2xl"
+              className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tight drop-shadow-lg"
             >
               Elite Talent. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500">
                 Exceptional Results.
               </span>
             </motion.h1>
-            <p className="text-xl md:text-2xl text-gray-400 mb-12 font-medium max-w-2xl mx-auto drop-shadow-md">
+            <p className="text-xl md:text-2xl text-gray-200 mb-10 font-medium max-w-2xl mx-auto drop-shadow-md">
               The world's leading marketplace for technical talent. Find vetted developers and designers for your next big project.
             </p>
 
-            {/* Search Bar with its own subtle lift */}
-            <motion.form
-              onSubmit={handleSearch}
-              style={{ transform: "translateZ(30px)" }}
-              className="relative max-w-2xl mx-auto group"
-            >
+            {/* Search Bar */}
+            <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto group">
               <input
                 type="text"
                 placeholder="Search for any service (e.g. Web Design)..."
-                className="w-full pl-12 pr-32 py-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] focus:border-purple-500/50 focus:bg-white/10 focus:outline-none shadow-2xl text-white font-medium text-lg placeholder-gray-500 transition-all"
+                className="w-full pl-12 pr-32 py-5 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl focus:border-purple-500 focus:bg-white/20 focus:outline-none shadow-xl text-white font-medium text-lg placeholder-gray-300 transition-all"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
               />
-              <FaSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-purple-400 transition-colors" size={20} />
+              <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-purple-400 transition-colors" size={20} />
               <button
                 type="submit"
-                className="absolute right-3 top-3 bottom-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-10 rounded-2xl font-black hover:scale-105 transition-all shadow-xl shadow-purple-900/40"
+                className="absolute right-2 top-2 bottom-2 bg-purple-600 text-white px-8 rounded-xl font-bold hover:bg-purple-700 transition-colors shadow-lg"
               >
                 Search
               </button>
-            </motion.form>
+            </form>
           </div>
-        </motion.div>
+        </div>
       </div>
       <BrandTicker />
 
