@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import API from "../api/axios";
 import toast from "react-hot-toast";
-import { FaChartLine, FaWallet, FaUsers, FaCheckCircle, FaShieldAlt, FaTrash, FaPlus, FaTimes, FaBriefcase, FaLayerGroup, FaCalendarAlt, FaExclamationCircle, FaEdit, FaSync, FaEnvelope, FaPaperPlane, FaComments, FaInbox, FaHistory, FaUniversity, FaMobileAlt } from "react-icons/fa";
+import { FaChartLine, FaWallet, FaUsers, FaCheckCircle, FaShieldAlt, FaTrash, FaPlus, FaTimes, FaBriefcase, FaLayerGroup, FaCalendarAlt, FaExclamationCircle, FaEdit, FaSync, FaEnvelope, FaPaperPlane, FaComments, FaInbox, FaHistory, FaUniversity, FaMobileAlt, FaPowerOff, FaUserSlash } from "react-icons/fa";
 
 const AdminPanel = () => {
   const [stats, setStats] = useState({});
@@ -120,14 +120,15 @@ const AdminPanel = () => {
     }
   };
 
-  const handleDeleteUser = async (userId) => {
-    if (!window.confirm("Are you sure you want to delete this user? This cannot be undone.")) return;
+  const handleDeleteUser = async (user) => {
+    const action = user.isActive === false ? "activate" : "deactivate";
+    if (!window.confirm(`Are you sure you want to ${action} this user?`)) return;
     try {
-      await API.delete(`/admin/users/${userId}`);
-      setUsers(users.filter(u => u._id !== userId));
-      toast.success("User removed");
+      const res = await API.delete(`/admin/users/${user._id}`);
+      setUsers(users.map(u => u._id === user._id ? { ...u, isActive: res.data.user.isActive } : u));
+      toast.success(res.data.message);
     } catch (err) {
-      toast.error("Failed to delete user");
+      toast.error(err.response?.data?.message || `Failed to ${action} user`);
     }
   };
 
@@ -551,6 +552,7 @@ const AdminPanel = () => {
                           </select>
                         </th>
                         <th className="px-8 py-6">Verified</th>
+                        <th className="px-8 py-6">Status</th>
                         <th className="px-8 py-6">Actions</th>
                       </tr>
                     </thead>
@@ -570,6 +572,14 @@ const AdminPanel = () => {
                               ) : (
                                 <span className="text-gray-600 font-bold italic opacity-50 uppercase text-[10px]">Pending</span>
                               )}
+                            </td>
+                            <td className="px-8 py-6">
+                              <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider ${u.isActive !== false
+                                ? 'bg-green-900/30 text-green-400 border border-green-900'
+                                : 'bg-red-900/30 text-red-400 border border-red-900'
+                                }`}>
+                                {u.isActive !== false ? "Active" : "Inactive"}
+                              </span>
                             </td>
                             <td className="px-8 py-6 flex gap-2">
                               <button
@@ -591,11 +601,11 @@ const AdminPanel = () => {
                                 Message
                               </button>
                               <button
-                                onClick={() => handleDeleteUser(u._id)}
-                                className="bg-transparent text-gray-600 hover:text-red-500 p-2 transition-colors"
-                                title="Delete User"
+                                onClick={() => handleDeleteUser(u)}
+                                className={`p-2 transition-colors ${u.isActive !== false ? "text-gray-600 hover:text-red-500" : "text-red-500 hover:text-green-500"}`}
+                                title={u.isActive !== false ? "Deactivate User" : "Activate User"}
                               >
-                                <FaTrash />
+                                <FaPowerOff />
                               </button>
                             </td>
                           </tr>
