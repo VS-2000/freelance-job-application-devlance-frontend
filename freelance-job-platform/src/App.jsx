@@ -1,6 +1,6 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { motion } from "framer-motion";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { AnimatePresence } from "framer-motion";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { Toaster } from "react-hot-toast";
@@ -18,6 +18,31 @@ import Wallet from "./pages/Wallet";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ChatBot from "./components/ChatBot";
+import PageTransition from "./components/PageTransition";
+
+const AnimatedRoutes = () => {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+        <Route path="/register" element={<PageTransition><Register /></PageTransition>} />
+        <Route path="/" element={<PageTransition><Dashboard /></PageTransition>} />
+        <Route path="/post-job" element={<PageTransition><PostJob /></PageTransition>} />
+        <Route path="/job/:id" element={<PageTransition><JobDetails /></PageTransition>} />
+        <Route path="/admin" element={<PageTransition><AdminPanel /></PageTransition>} />
+        <Route path="/payment/:jobId" element={<PageTransition><Payment /></PageTransition>} />
+        <Route path="/reviews/:userId" element={<PageTransition><Reviews /></PageTransition>} />
+        <Route path="/profile/:id" element={<PageTransition><Profile /></PageTransition>} />
+        <Route path="/messages" element={<PageTransition><Messages /></PageTransition>} />
+        <Route path="/wallet" element={<PageTransition><Wallet /></PageTransition>} />
+        <Route path="/about" element={<PageTransition><About /></PageTransition>} />
+        <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
+      </Routes>
+    </AnimatePresence>
+  );
+};
 
 function App() {
   return (
@@ -25,28 +50,9 @@ function App() {
       <Router>
         <Toaster position="top-right" reverseOrder={false} />
         <Header />
-        <motion.main
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="min-h-screen"
-        >
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/post-job" element={<PostJob />} />
-            <Route path="/job/:id" element={<JobDetails />} />
-            <Route path="/admin" element={<AdminPanel />} />
-            <Route path="/payment/:jobId" element={<Payment />} />
-            <Route path="/reviews/:userId" element={<Reviews />} />
-            <Route path="/profile/:id" element={<Profile />} />
-            <Route path="/messages" element={<Messages />} />
-            <Route path="/wallet" element={<Wallet />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-          </Routes>
-        </motion.main>
+        <main className="min-h-screen">
+          <AnimatedRoutes />
+        </main>
         <ChatBot />
         <Footer />
       </Router>

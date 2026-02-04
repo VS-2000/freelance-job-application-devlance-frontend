@@ -9,6 +9,7 @@ import {
     FaBriefcase, FaEdit, FaSave, FaTimes, FaPlus, FaTrash,
     FaChartLine, FaProjectDiagram, FaCheckCircle, FaAward, FaWallet, FaExclamationCircle
 } from "react-icons/fa";
+import ProfileSkeleton from "../components/ProfileSkeleton";
 
 const Profile = () => {
     const { id } = useParams();
@@ -155,7 +156,7 @@ const Profile = () => {
         }
     };
 
-    if (loading) return <div className="min-h-screen bg-black flex items-center justify-center text-white animate-pulse">Loading Profile...</div>;
+    if (loading) return <ProfileSkeleton />;
     if (!profile) return <div className="min-h-screen bg-black flex items-center justify-center text-white">User not found</div>;
 
     const isOwnProfile = currentUser?._id === id;

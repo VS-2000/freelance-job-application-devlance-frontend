@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaWallet, FaArrowUp, FaArrowDown, FaHistory, FaUniversity, FaMobileAlt, FaClock, FaCheckCircle, FaTimesCircle, FaExclamationTriangle } from "react-icons/fa";
 import API from "../api/axios";
 import toast from "react-hot-toast";
+import Counter from "../components/Counter";
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 
 const Wallet = () => {
     const [data, setData] = useState({ balance: 0, earnings: [], withdrawals: [] });
@@ -12,6 +14,11 @@ const Wallet = () => {
     const [withdrawMethod, setWithdrawMethod] = useState("bank"); // bank or upi
     const [details, setDetails] = useState({ accountNumber: "", ifscCode: "", bankName: "", upiId: "" });
     const [submitting, setSubmitting] = useState(false);
+
+    const chartData = (data.earnings || []).slice(0, 7).reverse().map(e => ({
+        date: new Date(e.updatedAt).toLocaleDateString([], { month: 'short', day: 'numeric' }),
+        amount: e.amount - (e.commissionAmount || 0)
+    }));
 
     useEffect(() => {
         fetchWalletData();
@@ -96,7 +103,7 @@ const Wallet = () => {
                     >
                         <div className="absolute top-0 right-0 w-32 h-32 bg-purple-600/10 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-purple-600/20 transition-colors"></div>
                         <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Available Balance</p>
-                        <h2 className="text-5xl font-black mb-6">₹{data.balance.toLocaleString()}</h2>
+                        <h2 className="text-5xl font-black mb-6">₹<Counter value={data.balance} /></h2>
                         <button
                             onClick={() => setIsWithdrawing(true)}
                             className="w-full bg-white text-black py-4 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-purple-500 hover:text-white transition-all shadow-xl"
@@ -114,7 +121,7 @@ const Wallet = () => {
                             <FaArrowDown />
                         </div>
                         <p className="text-gray-500 text-sm font-bold uppercase tracking-widest mb-1">Total Earnings</p>
-                        <p className="text-2xl font-black">₹{(data.earnings || []).reduce((sum, e) => sum + (e.amount - (e.commissionAmount || 0)), 0).toLocaleString()}</p>
+                        <p className="text-2xl font-black">₹<Counter value={(data.earnings || []).reduce((sum, e) => sum + (e.amount - (e.commissionAmount || 0)), 0)} /></p>
                     </div>
 
                     {/* Card: Pending Withdrawals */}
@@ -123,7 +130,7 @@ const Wallet = () => {
                             <FaClock />
                         </div>
                         <p className="text-gray-500 text-sm font-bold uppercase tracking-widest mb-1">Pending Payouts</p>
-                        <p className="text-2xl font-black">₹{(data.withdrawals || []).filter(w => w.status === 'pending').reduce((sum, w) => sum + w.amount, 0).toLocaleString()}</p>
+                        <p className="text-2xl font-black">₹<Counter value={(data.withdrawals || []).filter(w => w.status === 'pending').reduce((sum, w) => sum + w.amount, 0)} /></p>
                     </div>
 
                     {/* Card: Recent Transaction */}
@@ -135,6 +142,64 @@ const Wallet = () => {
                         <p className="text-2xl font-black">
                             {(data.withdrawals || []).length > 0 ? `₹${data.withdrawals[0].amount.toLocaleString()}` : "N/A"}
                         </p>
+                    </div>
+                </div>
+
+                {/* Earnings Chart Section */}
+                <div className="bg-[#0c0c0c] border border-gray-800 p-8 rounded-[2rem] mb-12 shadow-2xl">
+                    <div className="flex items-center justify-between mb-8">
+                        <div>
+                            <h3 className="text-2xl font-black">Earnings Overview</h3>
+                            <p className="text-gray-500 text-sm font-medium">Income performance for recent projects</p>
+                        </div>
+                        <div className="px-4 py-2 bg-green-500/10 text-green-400 rounded-xl border border-green-500/20 text-xs font-bold uppercase tracking-widest">
+                            Live Data
+                        </div>
+                    </div>
+                    <div className="h-[300px] w-full">
+                        {chartData.length > 0 ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={chartData}>
+                                    <defs>
+                                        <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
+                                    <XAxis
+                                        dataKey="date"
+                                        stroke="#4b5563"
+                                        fontSize={12}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <YAxis
+                                        stroke="#4b5563"
+                                        fontSize={12}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tickFormatter={(value) => `₹${value}`}
+                                    />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: '#111', border: '1px solid #374151', borderRadius: '12px' }}
+                                        itemStyle={{ color: '#8b5cf6', fontWeight: 'bold' }}
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="amount"
+                                        stroke="#8b5cf6"
+                                        strokeWidth={4}
+                                        fillOpacity={1}
+                                        fill="url(#colorAmount)"
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div className="h-full flex items-center justify-center text-gray-500 italic">
+                                Insufficient data to generate chart
+                            </div>
+                        )}
                     </div>
                 </div>
 

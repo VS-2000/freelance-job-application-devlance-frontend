@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import JobCard from "../components/JobCard";
 import { FaSearch, FaBriefcase, FaFilter } from "react-icons/fa";
+import JobCardSkeleton from "../components/JobCardSkeleton";
 import VisionSection from "../components/VisionSection";
 
 
@@ -168,9 +169,9 @@ const Dashboard = () => {
             </div>
 
             {loading ? (
-              <div className="grid md:grid-cols-2 gap-6 animate-pulse">
-                {([1, 2, 3, 4]).map(i => (
-                  <div key={i} className="h-64 bg-gray-900 rounded-3xl border border-gray-800"></div>
+              <div className="grid md:grid-cols-2 gap-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <JobCardSkeleton key={i} />
                 ))}
               </div>
             ) : (

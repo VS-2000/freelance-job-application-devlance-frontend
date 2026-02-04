@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import ChatWindow from "../components/ChatWindow";
 import { FaStar, FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
+import JobDetailsSkeleton from "../components/JobDetailsSkeleton";
 
 const JobDetails = () => {
   const { id } = useParams();
@@ -112,7 +113,7 @@ const JobDetails = () => {
     }
   }
 
-  if (loading) return <p className="p-6 text-center animate-pulse">Loading Project Details...</p>;
+  if (loading) return <JobDetailsSkeleton />;
   if (!job) return <p className="p-6 text-center">Job not found</p>;
 
   return (

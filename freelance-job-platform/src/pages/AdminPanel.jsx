@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import API from "../api/axios";
 import toast from "react-hot-toast";
 import { FaChartLine, FaWallet, FaUsers, FaCheckCircle, FaShieldAlt, FaTrash, FaPlus, FaTimes, FaBriefcase, FaLayerGroup, FaCalendarAlt, FaExclamationCircle, FaEdit, FaSync, FaEnvelope, FaPaperPlane, FaComments, FaInbox, FaHistory, FaUniversity, FaMobileAlt, FaPowerOff, FaUserSlash } from "react-icons/fa";
+import Counter from "../components/Counter";
 
 const AdminPanel = () => {
   const [stats, setStats] = useState({});
@@ -1351,7 +1352,10 @@ const StatCard = ({ title, value, icon, color }) => {
       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl mb-6 border ${colors[color]}`}>
         {icon}
       </div>
-      <div className="text-3xl font-black text-white mb-1">{value}</div>
+      <div className="text-3xl font-black text-white mb-1">
+        {typeof value === 'number' ? <Counter value={value} /> :
+          (typeof value === 'string' && value.startsWith('₹') ? <>₹<Counter value={parseInt(value.replace(/[^0-9]/g, ''))} /></> : value)}
+      </div>
       <div className="text-xs text-gray-500 font-bold uppercase tracking-widest">{title}</div>
     </div>
   );
